@@ -4,10 +4,10 @@
 
 url: http://chienlima.github.io
 title: Pony's Stable
-subtitle: Stable of Notes
+subtitle: 
 author: Chienli Ma
 simple_search: https://www.google.com/search
-description: coding/machine learning/other things
+description: coding notes
 
 # Default date format is "ordinal" (resulting in "July 22nd 2007")
 # You can customize the format as defined in
@@ -79,7 +79,7 @@ google_plus_one_size: medium
 
 # Google Plus Profile
 # Hidden: No visible button, just add author information to search results
-googleplus_user: Ma Chienli
+googleplus_user: maqianlie@gmail.com
 googleplus_hidden: true
 
 # Pinboard
