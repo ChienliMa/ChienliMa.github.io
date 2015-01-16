@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Pony's Stable]]></title>
+  <link href="http://chienlima.github.io/atom.xml" rel="self"/>
+  <link href="http://chienlima.github.io/"/>
+  <updated>2015-01-16T23:26:23+08:00</updated>
+  <id>http://chienlima.github.io/</id>
+  <author>
+    <name><![CDATA[Chienli Ma]]></name>
+    <email><![CDATA[maqianlie@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Have a Try on Octopress]]></title>
+    <link href="http://chienlima.github.io/blog/2015/01/16/have-a-try-on-octopress/"/>
+    <updated>2015-01-16T23:20:53+08:00</updated>
+    <id>http://chienlima.github.io/blog/2015/01/16/have-a-try-on-octopress</id>
+    <content type="html"><![CDATA[<p>I&rsquo;ve always want a English technical blog. i&rsquo;ve tried wordpress, which is far from satisfying to inserting code.</p>
+
+<p>Now, I have a try on octopress. Hope it work well~</p>
+]]></content>
+  </entry>
+  
+</feed>
