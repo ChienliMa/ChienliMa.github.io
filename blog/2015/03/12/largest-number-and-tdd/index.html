@@ -9,7 +9,7 @@
   <meta name="author" content="Chienli Ma">
 
   
-  <meta name="description" content="Today I solve another problem on leetcode, the process of solving this issue just like the old saying: “踏破铁鞋无觅处，得来全不费功夫”, which means we spare a lot &hellip;">
+  <meta name="description" content="Today I solve another problem on leetcode, the process of solving this issue just like the old saying: “踏破铁鞋无觅处，得来全不费功夫”, which means people spared a &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -82,7 +82,7 @@
   </header>
 
 
-<div class="entry-content"><p>Today I solve another problem on leetcode, the process of solving this issue just like the old saying: “踏破铁鞋无觅处，得来全不费功夫”, which means we spare a lot on a job but it</p>
+<div class="entry-content"><p>Today I solve another problem on leetcode, the process of solving this issue just like the old saying: “踏破铁鞋无觅处，得来全不费功夫”, which means people spared a lot of efforts on a problem but it was solved in a unexpected simple way.</p>
 
 <p>Ok, let&rsquo;s talk about the problem:</p>
 
@@ -96,64 +96,7 @@
 
 <p>In the comparation, those numbers will be combine to form the biggest number they can. This is the most important part. At first, I wrote a complicated algorithm which did comparasion using  <code>a[:length] &gt; b[:length]</code>, and lots of code handle conner case &ndash; one of the number is longger. The code went really long like</p>
 
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-</pre></td><td class='code'><pre><code class='Python'><span class='line'><span class="c"># nums are number with same first fight</span>
-</span><span class='line'><span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">nums</span><span class="p">)):</span>
-</span><span class='line'>    <span class="k">if</span> <span class="n">win_length</span> <span class="o">==</span> <span class="nb">len</span><span class="p">(</span><span class="n">nums</span><span class="p">[</span><span class="n">index</span><span class="p">]):</span>
-</span><span class='line'>        <span class="k">if</span> <span class="n">num</span> <span class="o">&gt;</span> <span class="n">win</span><span class="p">:</span>
-</span><span class='line'>            <span class="n">num_win</span> <span class="o">=</span> <span class="bp">True</span>
-</span><span class='line'>    <span class="k">else</span><span class="p">:</span>
-</span><span class='line'>      <span class="c"># if one of them is longer, compare the shared part</span>
-</span><span class='line'>        <span class="n">cmp_length</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span> <span class="n">win_length</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="p">)</span>
-</span><span class='line'>        <span class="k">if</span> <span class="n">num</span><span class="p">[:</span><span class="n">cmp_length</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">win</span><span class="p">[:</span><span class="n">cmp_length</span><span class="p">]:</span>
-</span><span class='line'>            <span class="n">num_win</span> <span class="o">=</span> <span class="bp">True</span>
-</span><span class='line'>        <span class="k">elif</span> <span class="n">num</span><span class="p">[:</span><span class="n">cmp_length</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">win</span><span class="p">[:</span><span class="n">cmp_length</span><span class="p">]:</span>
-</span><span class='line'>            <span class="n">num_win</span> <span class="o">=</span> <span class="bp">False</span>
-</span><span class='line'>        <span class="k">else</span><span class="p">:</span>
-</span><span class='line'>            <span class="c"># if shared part equals</span>
-</span><span class='line'>            <span class="c"># wrap the outside part and do the comparsion</span>
-</span><span class='line'>            <span class="k">if</span> <span class="n">win_length</span> <span class="o">&gt;</span> <span class="nb">len</span><span class="p">(</span><span class="n">num</span><span class="p">):</span>
-</span><span class='line'>                <span class="c"># shortter number should be win by default</span>
-</span><span class='line'>                <span class="n">num_win</span> <span class="o">=</span> <span class="bp">True</span>
-</span><span class='line'>                <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="n">cmp_length</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">win</span><span class="p">)):</span>
-</span><span class='line'>                    <span class="k">if</span> <span class="n">win</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&gt;</span> <span class="n">win</span><span class="p">[</span><span class="n">i</span><span class="o">%</span><span class="n">cmp_length</span><span class="p">]:</span>
-</span><span class='line'>                        <span class="n">num_win</span> <span class="o">=</span> <span class="bp">False</span>
-</span><span class='line'>                        <span class="k">break</span>
-</span><span class='line'>                    <span class="k">elif</span> <span class="n">win</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">win</span><span class="p">[</span><span class="n">i</span><span class="o">%</span><span class="n">cmp_length</span><span class="p">]:</span>
-</span><span class='line'>                        <span class="k">break</span>
-</span><span class='line'>            <span class="k">else</span><span class="p">:</span>
-</span><span class='line'>                <span class="c"># similar to last case</span>
-</span><span class='line'>                <span class="c"># ignore to save spaces</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This code went well expect for the test cases like <code>[8308, 830]</code> or <code>[101,10]</code>: No matter how I compared thoes numbers, they are &lsquo;equal&rsquo;. But when I combined them with different order, the result differed. I spent a long time trying to figure<code>(playing)</code> a<code>(3ds)</code> method<code>(game)</code>. Suddenly, I came out with a idea: &ldquo;why not do the comparision by combine digits in different order and see which result is larger?&rdquo;. It Works, and the final algorithm become really simple:</p>
+<p>This code went well expect for the test cases like <code>[8308, 830]</code> or <code>[101,10]</code>: No matter how I compared thoes numbers, they are &lsquo;equal&rsquo;. But when I combined them with different order, the result differed. I spent a long time trying to figure<code>(playing)</code> a<code>(3ds)</code> method<code>(game)</code>. Suddenly, I came out with a idea: &ldquo;why not do the comparision by combine digits in different order and see which result is larger?&rdquo;. It Works, and the final algorithm became really simple:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
