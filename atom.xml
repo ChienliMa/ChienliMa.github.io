@@ -4,7 +4,7 @@
   <title><![CDATA[Pony's Stable]]></title>
   <link href="http://chienlima.github.io/atom.xml" rel="self"/>
   <link href="http://chienlima.github.io/"/>
-  <updated>2015-03-12T17:44:55+08:00</updated>
+  <updated>2015-03-12T17:46:42+08:00</updated>
   <id>http://chienlima.github.io/</id>
   <author>
     <name><![CDATA[Chienli Ma]]></name>
@@ -22,11 +22,17 @@
 
 <p>Ok, let&rsquo;s talk about the problem:</p>
 
-<p>  Given a list of non negative integers, arrange them such that they form the largest number.</p>
+<figure class='code'><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class=''><span class='line'>  Given a list of non negative integers, arrange them such that they form the largest number.
+</span><span class='line'>  
+</span><span class='line'>  For example, given [3, 30, 34, 5, 9], the largest formed number is 9534330.
+</span><span class='line'>  
+</span><span class='line'>  Note: The result may be very large, so you need to return a string instead of an integer.</span></code></pre></td></tr></table></div></figure>
 
-<p>  For example, given [3, 30, 34, 5, 9], the largest formed number is 9534330.</p>
-
-<p>  Note: The result may be very large, so you need to return a string instead of an integer.</p>
 
 <p>So the first thing I need to do is transfer integers into strings, which will help in the following comparasion. Next, I sorted the numbers based on their first digits because obsiviousl, <code>9**</code> is greater than <code>1**</code>. Aftr that, I extracted numbers with same first digits and do the comparation.</p>
 
