@@ -3,7 +3,7 @@ layout: post
 title: "学还是不学？这是一个问题."
 date: 2015-03-06 18:43:00 +0800
 comments: true
-categories: 
+categories: [thoughts]
 ---
 
 最近一直在纠结一个问题：我手上有一本《操作系统原理》，看？还是不看？
