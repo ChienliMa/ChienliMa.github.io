@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Leetcodebattlefield | Pony's Stable]]></title>
+  <link href="http://chienlima.github.io/blog/categories/leetcodebattlefield/atom.xml" rel="self"/>
+  <link href="http://chienlima.github.io/"/>
+  <updated>2015-03-27T00:25:55+08:00</updated>
+  <id>http://chienlima.github.io/</id>
+  <author>
+    <name><![CDATA[Chienli Ma]]></name>
+    <email><![CDATA[maqianlie@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Leetcode Battle Field: largestNum (and TDD?)]]></title>
+    <link href="http://chienlima.github.io/blog/2015/03/12/largest-number-and-tdd/"/>
+    <updated>2015-03-12T17:38:50+08:00</updated>
+    <id>http://chienlima.github.io/blog/2015/03/12/largest-number-and-tdd</id>
+    <content type="html"><![CDATA[<p>Today I solve another problem on leetcode, the process of solving this issue just like the old saying: “踏破铁鞋无觅处，得来全不费功夫”, which means people spared a lot of efforts on a problem but it was solved in a unexpected simple way.</p>
+
+<p>Ok, let&rsquo;s talk about the problem:</p>
+
+<pre><code>  Given a list of non negative integers, arrange them such that they form the largest number.
+
+  For example, given [3, 30, 34, 5, 9], the largest formed number is 9534330.
+
+  Note: The result may be very large, so you need to return a string instead of an integer.
+</code></pre>
+
+<p>So the first thing I need to do is transfer integers into strings, which will help in the following comparasion. Next, I sorted the numbers based on their first digits because obsiviousl, <code>9**</code> is greater than <code>1**</code>. Aftr that, I extracted numbers with same first digits and do the comparation.</p>
+
+<p>In the comparation, those numbers will be combine to form the biggest number they can. This is the most important part. At first, I wrote a complicated algorithm which did comparasion using  <code>a[:length] &gt; b[:length]</code>, and lots of code handle conner case &ndash; one of the number is longger. The code went really long like</p>
+
+<p>This code went well expect for the test cases like <code>[8308, 830]</code> or <code>[101,10]</code>: No matter how I compared thoes numbers, they are &lsquo;equal&rsquo;. But when I combined them with different order, the result differed. I spent a long time trying to figure<code>(playing)</code> a<code>(3ds)</code> method<code>(game)</code>. Suddenly, I came out with a idea: &ldquo;why not do the comparision by combine digits in different order and see which result is larger?&rdquo;. It Works, and the final algorithm became really simple:</p>
+
+<pre><code class="python">class Solution:
+    # @param num, a list of integers
+    # @return a string
+    def largestNumber(self, num):
+        num = [ str(n) for n in num ]
+        # sort by the first digit 
+        sorted_num = sorted(num, key = lambda x : x[0], reverse = True)
+
+        # for number with same 'first number', combine them to get biggest
+        result = ''
+        for i in xrange(9, -1, -1):
+            i = str(i)
+            num_group = [ num for num in sorted_num if num[0] == i]
+            if len(num_group)&gt;0:
+                result += self.maxNum( num_group ) 
+        # check if number is zero
+        if int(result) == 0:
+            result = '0'
+        return result
+
+    def maxNum( self, nums ):
+        """
+        Given numbers(list of string) with same first digits, 
+        combine them to get max number(string).
+        """
+        result = ''
+        while len(nums) != 1:
+            # init a winner and its index
+            win = nums[0]
+            win_index = 0
+            win_length = len(win)
+
+            # find a num, if added to result, yield biggest number
+            for index in xrange(1, len(nums)):
+                num = nums[index]
+                result1 = win + num
+                result2 = num + win
+                if result1&gt;result2:
+                    num_win = False
+                else:
+                    num_win = True
+
+                if num_win:
+                    win = num
+                    win_index = index
+                    win_length = len(num)
+
+            # append the winner to the result
+            result += nums.pop(win_index)
+        # append the last number
+        result += nums[0]
+        return result
+</code></pre>
+
+<hr />
+
+<h3>About TDD:</h3>
+
+<p>In Last day&rsquo;s interview, I was asked about my idea of TDD(Test Drive Development), I just answered:&ldquo;I think it is usual, I wrote test for my codes.&rdquo;, which equals to answered nothing. These two days I developed leetcode&rsquo;s answer with the help of OnlineJudge&rsquo;s test cases, I did realise that writing test cases norishes a developer.</p>
+
+<p>Every time programmers write tests，they try covering every special cases they know， therefore codes pass their own tests are their best products within their ability. But when things come to production, codes will prossibly encouter cases that make it fail, which, just like a hole in developer&rsquo;s mind. Every time developer find such a case, it find a hole in his mind he never knows, then he fixes it. Day after dats, after millions of holes are fix, his mind hardly has hole. Therefore, his products, his codes, will become unbelievably stable.</p>
+
+<p>That&rsquo;s my understand of TDD &ndash; Test Drive Developer.</p>
+
+<p>Just for fun, don&rsquo;t take it seriously. :)</p>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Leetcode Battle Field and 面试小日记]]></title>
+    <link href="http://chienlima.github.io/blog/2015/03/11/day2015-dot-3-10/"/>
+    <updated>2015-03-11T21:23:03+08:00</updated>
+    <id>http://chienlima.github.io/blog/2015/03/11/day2015-dot-3-10</id>
+    <content type="html"><![CDATA[<p>今天去个创业公司面试了，总体来说不是很满意。一方面是在面谈的时候没能够控制好自己的情绪，让对方不断说“没关系，这个不是说你上班……”什么的。其实我应该要控制好自己的情绪，然后想想怎么表达自己的想法，说服别人。这方面我一直做不好。另一个问题是笔试的时候再次把自己鄙视了 －－ 题目都不会(=T_T=)。</p>
+
+<p>也算加深了一点职场上对程序员的要求的了解。一个是技术方面，首先要基础好：理论懂得各种名词基本理论，比如搞互联网通信就知道HTTP和socket是怎么回事，写后台就要回thread和process；另外技能熟练，常用的包的常用概念和API要熟悉。这个决定了程序员能不能用。如果不能用，但是长期留，就可以看看他聪不聪明，聪明慢慢学。如果短期留，最好基础和技能都扎实，直接形成生产力。这里两方面我都没做好：知识不扎实又不能长期留。所以技术上跪。</p>
+
+<p>另一个是做人方面：程序员的价值观最好跟自己团队相近，一起工作才能有化学反应。人与人之间的愉快交流会促进交流和学习，这样大家才能一块成长和迸发新想法，而不是说简单的完成任务，每天原地踏步，死水一潭。今天跟Boss交流，我很不理解的一个方面就是：明明编程语言和包／库是工具，他们具有不同特性，然后程序员应该根据不同需求使用不同语言／包。但是他却根据人的特性，然后给人贴上不同语言的label：&#8221;我觉得你更适合python社区“ 这个我一听，心想“怎么能这样呢？搞反了啊。”,然后就激动了，然后就失控了。估计他也聊得不开心。总的来说，双方都没反应，二跪。</p>
+
+<p>反正今天就是跪了一下午，上来发发泄。不过后期的学习计划也明确了下:</p>
+
+<ul>
+<li>如果准备去互联公司工作，首先互联网通信协议和计算机网络要精通（基本功好），然后相关包要API要熟悉（技能足），上来就是战斗力（劳动力）。总的来说不要求基础好，但要要求API熟记。</li>
+<li>如果准备大公司保养，一个劲儿算法学好。大公司有钱，不着急形成战斗力，可以慢慢培养人才。算法基础好，往哪里转都合适。但是因为大公司一般都没有现成包可以使用，一切自己开发，所以对算法要求很高。总的来说不要求工具玩得出神入化，但是基础好。</li>
+</ul>
+
+
+<hr />
+
+<h3>LeetCode Battle Field:</h3>
+
+<p>好吧，回来说下这今天在做的一道leetcode。以后leetcode和hackerrank相关刷题blog都有这个<code>leetcode battle field</code>的flag。</p>
+
+<p>先看题目:</p>
+
+<p>  Say you have an array for which the ith element is the price of a given stock on day i.Design an algorithm to find the maximum profit. You may complete at most k transactions.</p>
+
+<p>基本题目意思是，给定一个股价序列<code>prices</code>和可操作（一买一卖）次数<code>k</code>，求最大利益。</p>
+
+<p>这道题目也是做了两个思路。首先最基本的是，股票必定低买高卖，因此先求极点。这个是没问题的。
+第一个思路是，股票一买一卖一个周期，把所有周期求出来，然后sort一下，取前<code>k</code>个周期求和就是最大利益。这个版本的代码没留着，因为缺陷很明显：如果股票小幅下跌后大幅上涨，我们就不赢该再下跌的时候把股票卖了，这样会浪费操作次数，导致利润降低。</p>
+
+<p>意识到这一点之后，这个题目变的很难。因为要有全局眼光。首先为股票写一个类</p>
+
+<pre><code class="Python">class Stock():
+    def __init__(self, buy_date, buy_price, sale_date, sale_price):
+        self.buy_price = buy_price
+        self.buy_date = buy_date
+        self.sale_price = sale_price
+        self.sale_date = sale_date
+        self.profit = sale_price - buy_price
+
+    def  __repr__(self):
+        return  str({
+        'buy_price': self.buy_price ,
+        'buy_date': self.buy_date ,
+        'sale_price': self.sale_price, 
+        'sale_date': self.sale_date ,
+        'profit': self.profit })
+</code></pre>
+
+<p>这个class代表了一直股票的所有关键参数：买卖时间和买卖价格，然后计算出利润。然后这个问题转化成两个：</p>
+
+<ol>
+<li>求取所有可能拥有的股票（所有可能买卖组合）</li>
+<li>这些组合在能够实现，操作次数满足条件的情况下的最大利润。</li>
+</ol>
+
+
+<p> 1 很简单，求所有极值点然后排列组合就好。2 的话，主要满足一个需求股票必须全卖之后才能全买，不能说连着买两次。简单地说就是买卖区间不能重叠。一开始考虑写成一个树，结点是一个股票，他的子结点是买了那只股票之后剩下的其他可能的股票。然后求取<code>depth＝k</code>的所有路径上的利润。但是这个方法很难实现，而且空间复杂度高。后来仔细一想其实这个就是个小递归（动态规划？）。这个问题就变成了：</p>
+
+<ol>
+<li>假设<code>N手</code>获得最大利益</li>
+<li>那么第一手的利益和剩下的<code>N-1手</code>的利益相加必定是最大的</li>
+<li>求取所有可能的第一手，与对应<code>N－1手</code>的最大利益，相加，看看那个利润最大</li>
+<li>对<code>N-1手</code>采用 1 直到省下一次操作次数，这时可以直接在所有选择中求max</li>
+</ol>
+
+
+<p>跟着这个做出了这个算法：</p>
+
+<pre><code class="Python">class Solution:
+    # @return an integer as the maximum profit 
+    def __init__(self):
+        self.have = False
+        self.profits = []
+
+    def possibleStocks(self, k, prices):
+      """get all possible stocks
+      """
+        # get all possible operate point
+        buy_points = []
+        sale_points = []
+        # conner case
+        if prices[0] &lt; prices[1]:
+            buy_points += [0]
+        if prices[-1] &gt; prices[-2]:
+            sale_points += [len(prices)-1]
+
+        # general case
+        for date in xrange(1, len(prices) - 1):
+            if prices[date-1] &lt;= prices[date] and\
+                prices[date+1] &lt;= prices[date]:
+                sale_points += [ date ]
+
+            if prices[date-1] &gt;= prices[date] and\
+                prices[date+1] &gt;= prices[date]:
+                buy_points += [ date ]
+
+
+        # get all possible stock
+        stocks = []
+        for buy_point in buy_points:
+            for sale_point in sale_points:
+                if buy_point &gt; sale_point:
+                    break
+                else:
+                    b_d = buy_point
+                    s_d = sale_point
+                    b_p = prices[buy_point]
+                    s_p = prices[sale_point]
+                    # stocks should earn money
+                    if s_p &gt; b_p:
+                        stocks += [ Stock(b_d, b_p, s_d, s_p) ]
+        return stocks
+
+    def findMaxProfit( self, operation, stocks, earliest_time ):
+      """  
+      Given possible stocks, operation tims and earliest 
+      operating time, get max profits
+      """
+        # remain stocks could not be bought before last stock saled
+        stocks = [stock for stock in stocks if stock.buy_date &gt;= earliest_time ]
+        # if no stock fulfill reuqirement reutrn0
+        if stocks == []:
+            return 0
+        if operation == 1: # if only 1 operation left, choose max profit
+            return max([ stock.profit for stock in stocks ])
+        else: # 找出 N－1手 和 第N手 的最大利益
+            operation -= 1
+            possible_profits = [0]
+            for index in xrange(len(stocks)):
+                left_stocks = list(stocks)
+                left_stocks.pop(index)
+                possible_profits += \
+                    [self.findMaxProfit(operation, left_stocks, stocks[index].sale_date) + stock.profit]
+            return max( possible_profits )
+
+    def maxProfit(self, k, prices):
+        if len(prices) &lt;= 1: 
+            return 0
+        if len(prices) == 2:
+            return max( 0, prices[1] - prices[0] )
+        stocks = self.possibleStocks( k, prices )
+        return self.findMaxProfit( k, stocks, 0)
+</code></pre>
+
+<p>这个算法花了很多时间调conner case，结果是没问题的，但是超时。之前用到<code>List.index()</code>方法，真心慢，没看源码，估计不少Python，丢弃了，依旧超时。目前不知道改进方法。后来认真想想，这个应该用动态规划？回去翻翻书.也可能是中间多了一个<code>Stock（）</code>，应该直接根据<code>buy()</code>和<code>sale()</code>写算法会更快。先刷后面的题目。这个POST把这个题目mark下有空慢慢想。</p>
+]]></content>
+  </entry>
+  
+</feed>
