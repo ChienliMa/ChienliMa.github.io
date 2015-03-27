@@ -1,0 +1,9 @@
+---
+layout: post
+title: "GSoC2015_blog_test"
+date: 2015-03-27 12:52:17 +0800
+comments: true
+categories: [gsoc2015]
+---
+
+Just a post to test if catagory and rss feed works well.

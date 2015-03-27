@@ -3,7 +3,7 @@ layout: post
 title: "Leetcode battle field: largestNum (and TDD?)"
 date: 2015-03-12 17:38:50 +0800
 comments: true
-categories: [LeetcodeBattlefield]
+categories: [leetcode_battlefield]
 ---
 
 Today I solve another problem on leetcode, the process of solving this issue just like the old saying: “踏破铁鞋无觅处，得来全不费功夫”, which means people spared a lot of efforts on a problem but it was solved in a unexpected simple way.

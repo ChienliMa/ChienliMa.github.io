@@ -3,7 +3,7 @@ layout: post
 title: "Leetcode battle field and 面试小日记"
 date: 2015-03-11 21:23:03 +0800
 comments: true
-categories:  [LeetcodeBattlefield]
+categories:  [leetcode_battlefield]
 ---
 
 今天去个创业公司面试了，总体来说不是很满意。一方面是在面谈的时候没能够控制好自己的情绪，让对方不断说“没关系，这个不是说你上班……”什么的。其实我应该要控制好自己的情绪，然后想想怎么表达自己的想法，说服别人。这方面我一直做不好。另一个问题是笔试的时候再次把自己鄙视了 －－ 题目都不会(=T_T=)。
