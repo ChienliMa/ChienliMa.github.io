@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Gsoc2015 | Pony's Stable]]></title>
+  <link href="http://chienlima.github.io/blog/categories/gsoc2015/atom.xml" rel="self"/>
+  <link href="http://chienlima.github.io/"/>
+  <updated>2015-03-27T13:22:18+08:00</updated>
+  <id>http://chienlima.github.io/</id>
+  <author>
+    <name><![CDATA[Chienli Ma]]></name>
+    <email><![CDATA[maqianlie@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[GSoC2015_blog_test]]></title>
+    <link href="http://chienlima.github.io/blog/2015/03/27/gsoc2015-blog-test/"/>
+    <updated>2015-03-27T12:52:17+08:00</updated>
+    <id>http://chienlima.github.io/blog/2015/03/27/gsoc2015-blog-test</id>
+    <content type="html"><![CDATA[<p>Just a post to test if catagory and rss feed works well.</p>
+]]></content>
+  </entry>
+  
+</feed>

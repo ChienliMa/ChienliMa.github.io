@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Leetcodebattlefield | Pony's Stable]]></title>
-  <link href="http://chienlima.github.io/blog/categories/leetcodebattlefield/atom.xml" rel="self"/>
+  <title><![CDATA[Category: Leetcode_battlefield | Pony's Stable]]></title>
+  <link href="http://chienlima.github.io/blog/categories/leetcode-battlefield/atom.xml" rel="self"/>
   <link href="http://chienlima.github.io/"/>
-  <updated>2015-03-27T00:25:55+08:00</updated>
+  <updated>2015-03-27T13:22:18+08:00</updated>
   <id>http://chienlima.github.io/</id>
   <author>
     <name><![CDATA[Chienli Ma]]></name>
