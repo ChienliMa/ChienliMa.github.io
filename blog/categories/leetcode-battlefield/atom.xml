@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Leetcode_battlefield | Pony's Stable]]></title>
   <link href="http://chienlima.github.io/blog/categories/leetcode-battlefield/atom.xml" rel="self"/>
   <link href="http://chienlima.github.io/"/>
-  <updated>2015-03-27T13:22:18+08:00</updated>
+  <updated>2015-03-30T00:30:25+08:00</updated>
   <id>http://chienlima.github.io/</id>
   <author>
     <name><![CDATA[Chienli Ma]]></name>
@@ -14,7 +14,578 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Leetcode Battle Field: largestNum (and TDD?)]]></title>
+    <title type="html"><![CDATA[Leetcode battlefield:Start Coding With C++]]></title>
+    <link href="http://chienlima.github.io/blog/2015/03/30/leetcode-start-coding-with-c-plus-plus/"/>
+    <updated>2015-03-30T00:24:06+08:00</updated>
+    <id>http://chienlima.github.io/blog/2015/03/30/leetcode-start-coding-with-c-plus-plus</id>
+    <content type="html"><![CDATA[<p>So, the buggy judging system of python is unbearable, therefore I just turned to C++ and expected a better experience. Also, I need to learn  C++ for my future career. So, a good start. This post contains following problems:</p>
+
+<ul>
+<li>Reverse words</li>
+<li>Eval RPN</li>
+<li>Tree Traversal</li>
+</ul>
+
+
+<hr />
+
+<h3>Reverse words</h3>
+
+<p>Before solving this problem I never tried using std::string, I thought string operation in C++ is as hard as C. However, standard library really ease my pains. In fact, with the help of std, I think coding with C++ is much more easier and happier than coding with Ruby and Python now.</p>
+
+<h5>Question:</h5>
+
+<p>Given an input string, reverse the string word by word.</p>
+
+<h5>Basic logic:</h5>
+
+<p>The idea is simple, find each word in the sentence, push then in the stack and pop back after dealing the whole sentence. Be careful to the spaces in the head or tails of the sentence and the repeated spaces.</p>
+
+<pre><code class="cpp">class Solution {
+public:
+    void reverseWords( string &amp;s )
+    {
+        // get the words in reverse order
+        vector&lt;string&gt; words;
+        split( s, ' ', words);
+        // reconstruct
+        s = "";
+        if( words.size() == 0 )return;
+        for( int i=0; i&lt;words.size();i++)        
+        {
+            s.append(words[i]);
+            s.append(" ");
+        }
+        // delete last space
+        s.erase( s.length()-1, -1);
+
+    }
+
+    void split( string &amp;s, char c, vector&lt;string&gt; &amp;v )
+    {
+        int begin, last;
+        // first word
+        begin = s.length() -1 ;
+        last  = s.find_last_of( c, begin );
+        if( s.substr( last+1, begin-last) != "") 
+        {
+            v.push_back(s.substr( last+1, begin-last));
+        }
+        // find next words
+        while( last &gt; 0 and begin != -1 )
+        {
+            // find a word 
+            begin = last - 1;
+            last  = s.find_last_of( c, begin );
+            // if it's repeated split character, skip it
+            while( last == begin )
+            {
+                begin = last - 1;
+                last  = s.find_last_of( c, begin );
+            }
+            // skip if is last space
+            if( s.substr( last+1, begin-last) != "") 
+            {
+                v.push_back(s.substr( last+1, begin-last));
+            }
+        }
+    }
+};
+</code></pre>
+
+<hr />
+
+<h3>evalRPN</h3>
+
+<h5>Question:</h5>
+
+<p>Evaluate the value of an arithmetic expression in Reverse Polish Notation. For example:
+    [&ldquo;2&rdquo;, &ldquo;1&rdquo;, &ldquo;+&rdquo;, &ldquo;3&rdquo;, &ldquo;*&rdquo;] -> ((2 + 1) * 3) -> 9</p>
+
+<h5>Basic logic:</h5>
+
+<p>Also simple idea: Iterater through the list, push numbers to a stack. Everytime we meet operaor, pop top 2 numbers and calculate the result, push the result to the stack. Finally, there will be only one number in the stack, which is the reuslt.</p>
+
+<pre><code class="C++">class Solution {
+public:
+    int evalRPN(vector&lt;string&gt; &amp;tokens) {
+        vector&lt;int&gt; resultStack;
+        string symbol;
+        int left, right, result;
+        bool isOperator;
+        for(int i=0; i&lt;tokens.size();i++)
+        {
+            symbol = tokens[i];
+            isOperator =  symbol=="+"||symbol=="-"||symbol=="*"||symbol=="/";
+            if( ! isOperator )
+                resultStack.push_back(std::stoi(symbol));
+            else
+            {
+                right = resultStack.back();
+                resultStack.pop_back();
+                left = resultStack.back();
+                resultStack.pop_back();
+                if(symbol=="+")
+                    result = left + right;
+                else if(symbol =="-")
+                    result = left - right;
+                else if(symbol=="*")
+                    result = left * right;
+                else if(symbol=="/")
+                    result = left / right;
+                else
+                    cout &lt;&lt; "ERROR";
+                resultStack.push_back(result);
+            }
+        }
+        return resultStack.back();
+    }
+};
+</code></pre>
+
+<hr />
+
+<h3>Tree traversal</h3>
+
+<h5>Basic logic:</h5>
+
+<p>Basic algo. There are 3 kind of traversal method: postorder, preorder and inorder.</p>
+
+<h5>PostOrder</h5>
+
+<pre><code class="c++ ">using namespace std;
+
+class Solution {
+public:
+    vector&lt;int&gt; postorderTraversal(TreeNode *root) {
+        vector&lt;int&gt; v;
+        if( root == NULL){
+            return v;
+        }
+        else{
+            if( root-&gt;left != NULL ){
+                travel( root-&gt;left, v );
+            }
+            if( root-&gt;right != NULL){
+                travel( root-&gt;right, v );
+            }
+            v.push_back(root-&gt;val);
+            return v;
+        }
+    }
+    void travel( TreeNode *node, vector&lt;int&gt; &amp;v ){
+        if( node-&gt;left != NULL ){
+            travel( node-&gt;left, v );
+        }
+        if( node-&gt;right != NULL){
+            travel( node-&gt;right, v );
+        }
+        v.push_back(node-&gt;val);
+    }
+};
+</code></pre>
+
+<h5>PreOrder</h5>
+
+<pre><code class="c++">
+using namespace std;
+
+class Solution {
+public:
+    vector&lt;int&gt; preorderTraversal(TreeNode *root) {
+        vector&lt;int&gt; v;
+        if( root == NULL ){
+            return v;
+        }
+        v.push_back(root-&gt;val);
+        if( root-&gt;left ){
+            travel( root-&gt;left, v );
+        }
+        if( root-&gt;right ){
+            travel( root-&gt;right, v);
+        }
+        return v;
+    }
+
+    void travel(TreeNode *node, vector&lt;int&gt; &amp;v){
+        v.push_back(node-&gt;val);
+        if( node-&gt;left ){
+            travel( node-&gt;left, v );
+        }
+        if( node-&gt;right ){
+            travel( node-&gt;right, v);
+        }
+    }
+};
+</code></pre>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Leetcode battlefield:Some Python Codes]]></title>
+    <link href="http://chienlima.github.io/blog/2015/03/30/leetcode-some-python-codes/"/>
+    <updated>2015-03-30T00:22:37+08:00</updated>
+    <id>http://chienlima.github.io/blog/2015/03/30/leetcode-some-python-codes</id>
+    <content type="html"><![CDATA[<p>I collected a bunches of leetcode code solutions and now put them in one post. This post contains the following questions:</p>
+
+<pre><code>* BST Iterator
+* Factorial Trailing Zeros
+* Excel number
+* Decimal
+* Find Peak Element
+* Min stack
+* Majority elements
+* Trailing zeros
+* Tree Travel
+</code></pre>
+
+<p>Also, after realing leetcode online judge have numerous bug in python test case, I decided to turn to C++. So, here comes the solutions.</p>
+
+<hr />
+
+<h3>BST Iterator</h3>
+
+<h5>Question:</h5>
+
+<p>Implement an iterator over a binary search tree (BST). Your iterator will be initialized with the root node of a BST.
+Calling <code>next()</code> will return the next smallest number in the BST.
+Note: <code>next()</code> and <code>hasNext()</code> should run in average <code>O(1)</code> time and uses <code>O(h)</code> memory, where h is the height of the tree.</p>
+
+<h5>Basic logic:</h5>
+
+<p>The smallest value is will be on the left-most node, therefore the first thing to do is to dive to the deepest ad left-most of the tree. Next we can return the value of the middle node, then its left node. A list of nodes on path should be maintain to avoid return repeated value.</p>
+
+<pre><code class="python">class BSTIterator:
+    # @param root, a binary search tree's root node
+    def __init__(self, root):
+        # ancestors of current node, 
+        self.ancestors = []
+
+        # current node, initialized by root
+        self.current = None
+
+        # current point to the  smallest value
+        self.current = root
+        self.dive()
+
+    # @return a boolean, whether we have a next smallest number
+    def hasNext(self):
+        return self.current != None
+
+    def hasLeft(self):
+        return self.hasNext() 
+
+    def hasRight(self):
+        return self.hasNext() 
+
+    # @return an integer, the next smallest number
+    def next(self):
+        # every time we dive first,
+        # so the smallest value is the current node
+        rval = self.current.val
+
+        if not self.hasRight():
+            # if no right nodes
+            # the next smallest value will be current node's parent
+            if len(self.ancestors) == 0:
+                self.current = None
+            else:
+                self.current = self.ancestors.pop()
+        else:
+            # if there is right node,  it's value will smaller than parent's, 
+            # so step into it, then dive to left-most
+            self.current = self.current.right
+            self.dive()
+
+        return rval
+
+    def dive(self):
+        while self.hasLeft():
+            self.ancestors.append( self.current )
+            self.current = self.current.left
+</code></pre>
+
+<hr />
+
+<h3>Excel column number</h3>
+
+<h5>Qusetion</h5>
+
+<p>Given Excel column number, return the corresponding digit number</p>
+
+<h5>Basic logic</h5>
+
+<p>A conversion of number systems( thought not a typical one) . First we map characters to numbers, them multiply digit in the <code>Nth</code> location with <code>26^n</code>, sum and get the result.</p>
+
+<pre><code class="python">class Solution:
+    # @param s, a string
+    # @return an integer
+    def __init__(self):
+        self.map ='ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+
+    def titleToNumber(self, s):
+        rval = 0
+        for i in xrange(len(s)):
+            # need to revese the string
+            rval += self.char2Int(s[ len(s) - i -1])*(26**i)
+        return rval
+
+    def char2Int(self, char):
+        return self.map.index(char)+1
+</code></pre>
+
+<hr />
+
+<h3>Majority element</h3>
+
+<h6>Question:</h6>
+
+<p>Given an array of size n, find the majority element. The majority element is the element that appears more than <code>n/2</code> times.</p>
+
+<h6>Basic logic:</h6>
+
+<p>Use a counter(map) to calculate how many times each elements has occured and return if <code>times &gt; length/2</code>.</p>
+
+<pre><code class="python">class Solution:
+    # @param num, a list of integers
+    # @return an integer
+    def majorityElement(self, num):
+        map = {}
+        length = float(len(num))
+        for n in num:
+            try:
+                map[n] += 1
+            except:
+                map[n] = 1
+            if map[n] &gt;= length/2:
+                return n
+</code></pre>
+
+<hr />
+
+<h3>Trailing zeros.</h3>
+
+<h5>Question:</h5>
+
+<p>Given an integer n, return the number of trailing zeroes in n!.</p>
+
+<h5>Basic logics:</h5>
+
+<p>This is more a math problem than a code problem. Notice that <code>1 x 2 x 3 ... x 5 ... x 10 ...</code> with every <code>5</code>( or <code>n x 5</code> ) there must be a <code>2</code>(or<code>nx2</code>). And the trailing zeros must be the result of <code>(2x5)^n</code>. Therefore, the problem becomes &lsquo;How many 5 are there in it&rsquo;s factors&rsquo;. ( Need to rewrite this paragraph )</p>
+
+<pre><code class="python">class Solution:
+    # @return an integer
+    def trailingZeroes(self, n):
+        num = 0
+        k = 1
+        while 5**k &lt;= n:
+            num += int(n/(5**k))
+            k += 1
+        return num
+</code></pre>
+
+<hr />
+
+<h3>Find peak elements</h3>
+
+<h6>Questions</h6>
+
+<p>Given an input array where num[i] ≠ num[i+1], find a peak element and return its index.</p>
+
+<h6>Basic logic</h6>
+
+<p>Easy problem, just iter over and compare each element with its neighbours. If the num[i] can equals num[i+], we first deduplicate, and then compare. Need some attentions on the conner case( length = 0,1 or the peak occurs on the head or tails)</p>
+
+<pre><code class="python">class Solution:
+    # @param num, a list of integer
+    # @return an integer
+    def findMin(self, num):
+        if len(num) == 1:
+            return num[0]
+        elif len(num) == 2:
+            return min(num[0],num[1])
+        else:
+            # deduplicate
+            while len(num) &gt; 1 and num[0] == num[-1]:
+                num.pop()
+            for i in xrange(len(num)):
+                try:
+                    if num[i] == num[i+1]:
+                        num.pop(i)
+                except:
+                    break
+            return self.findMinNoRepeat(num)
+
+    def findMinNoRepeat(self, num):
+        if len(num) == 1:
+            return num[0]
+        elif len(num) == 2:
+            return min(num[0],num[1])
+        else:
+            buf = []
+            index = 0
+            length = len(num)
+            for i in xrange(3):
+                buf.append(num[index])
+                index += 1
+            index -= 1
+
+            while True:
+                if self.isMax(buf):
+                    return buf[1]
+                else:
+                    index += 1
+                    index %= length
+                    if num[index] != buf[-1]:
+                        buf.pop(0)
+                        buf.append(num[index])
+
+    def isMax(self, buf):
+        return buf[1]&lt;buf[0] and buf[2]&gt;buf[1]
+</code></pre>
+
+<hr />
+
+<h3>Min Stack</h3>
+
+<h5>question</h5>
+
+<p>Design a stack that supports push, pop, top, and retrieving the minimum element in constant time.</p>
+
+<pre><code>* push(x) -- Push element x onto stack.
+* pop() -- Removes the element on top of the stack.
+* top() -- Get the top element.
+* getMin() -- Retrieve the minimum element in the stack.
+</code></pre>
+
+<h5>Basic logic</h5>
+
+<p>The key is to maintain double stack: one for normal push() and pop(), the other for the operation getMin(). When a new min value is pushed, we also push it to the min_stack, when it pops, we also pop it from min_stack. So the minimum value is always on the top of min_stack.</p>
+
+<pre><code>class MinStack:
+    def __init__(self, node = None):
+        self.stack = []
+        self.minStack = []
+
+    # @param x, an integer
+    # @return an integer
+    def push(self, x):
+        self.stack.append(x)
+        if self.minStack == [] or x &lt;= self.minStack[-1]:
+            self.minStack.append(x)
+
+    # @return nothing
+    def pop(self):
+        val = self.stack.pop()
+        if val == self.minStack[-1]:
+            self.minStack.pop()
+
+    # @return an integer
+    def top(self):
+        return self.stack[-1]
+
+    # @return an integer
+    def getMin(self):
+        return self.minStack[-1]    
+</code></pre>
+
+<hr />
+
+<h3>Fraction to Recurring Decimal</h3>
+
+<h5>Question</h5>
+
+<h5>Basic logics.</h5>
+
+<p>Easy job, just a little bit tedious. By implementing a long divide, we can easily find the answer. Remember to store every ( quotient，remainder )pairs so that we can know when it starts repeat itself. The python test case is wrong. See <a href="https://leetcode.com/discuss/28804/result-of-test-case-1-214748364-should-be-repeating-decimal">this post</a>. After this solution, I turned to C++, which should have better judge system.</p>
+
+<pre><code class="python">class Solution():
+    def __init__(self):
+        pass
+    # @return a string
+    def fractionToDecimal(self, numerator, denominator):
+        # corner case
+        if numerator == 0:
+            return '0'
+
+        # if no decimal number
+        if numerator % denominator == 0:
+            return str( numerator/denominator )
+        else:
+            # reduction of a fraction, not necessary
+            fraction = 2
+            while True:
+                while fraction &lt;= min( abs(numerator), abs(denominator) ):
+                    if numerator % fraction == 0 and denominator % fraction == 0:
+                        numerator /= fraction
+                        denominator /= fraction
+                        break
+                    fraction += 1
+
+                # if it's end, end it. else ,restart again
+                if fraction &gt;= min( abs(numerator), abs(denominator) ):
+                    break
+                fraction = 2
+
+            # Decomposition quality factor to find if demimal repeated itself, not necessary.
+            denom = abs(denominator)
+            while denom % 2 == 0:
+                    denom /= 2
+            while denom % 5 == 0:
+                    denom /=5
+            repeated = denom != 1
+
+            result_list = []
+            # get the symbol of final result
+            if numerator*denominator &lt; 0:
+                result_list += [('-','-')]
+            numerator = abs(numerator)
+            denominator = abs (denominator)
+
+            # start long divide loop( core algo )
+            add_dot = True
+            index = 0
+            while True:
+                # long divide
+                quotient = numerator / denominator
+                remainder = numerator % denominator
+                numerator = remainder
+
+                # check if repreated, if not, ready for the next division
+                if (remainder, quotient) in result_list:
+                    repreat_start_locaation = result_list.index((remainder, quotient))
+                    result_list.insert( repreat_start_locaation, ( '(', '(' ) )
+                    result_list.append( ( ')' , ')' ) )
+                    break
+
+                # append this result of division
+                result_list.append( (remainder, quotient) )
+                # if remainder is 0, it's not a repreated number                    
+                if remainder == 0:
+                    break
+                if add_dot:
+                    result_list.append( ('.','.') )
+                    add_dot = False
+                numerator *= 10
+
+                index += 1
+                if index &gt; 100:
+                    break
+
+
+            # construck result
+            result_list.reverse()
+            result_str = ''
+            while len(result_list) &gt; 0:
+                remainder, quotient = result_list.pop()
+                result_str += str(quotient)
+            return result_str
+</code></pre>
+]]></content>
+  </entry>
+  
+  <entry>
+    <title type="html"><![CDATA[Leetcode Battlefield: largestNum (and TDD?)]]></title>
     <link href="http://chienlima.github.io/blog/2015/03/12/largest-number-and-tdd/"/>
     <updated>2015-03-12T17:38:50+08:00</updated>
     <id>http://chienlima.github.io/blog/2015/03/12/largest-number-and-tdd</id>

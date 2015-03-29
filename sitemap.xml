@@ -1,6 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://chienlima.github.io/blog/2015/03/30/leetcode-start-coding-with-c-plus-plus/</loc>
+    <lastmod>2015-03-30T00:24:06+08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>http://chienlima.github.io/blog/2015/03/30/leetcode-some-python-codes/</loc>
+    <lastmod>2015-03-30T00:22:37+08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>http://chienlima.github.io/blog/2015/03/27/gsoc2015-blog-test/</loc>
     <lastmod>2015-03-27T12:52:17+08:00</lastmod>
     <priority>0.8</priority>
@@ -27,25 +37,25 @@
   </url>
   <url>
     <loc>http://chienlima.github.io/blog/archives/</loc>
-    <lastmod>2015-03-27T13:22:18+08:00</lastmod>
+    <lastmod>2015-03-30T00:30:25+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>http://chienlima.github.io/</loc>
-    <lastmod>2015-03-27T13:22:18+08:00</lastmod>
+    <lastmod>2015-03-30T00:30:25+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>http://chienlima.github.io/blog/catagory/</loc>
-    <lastmod>2015-03-27T13:22:18+08:00</lastmod>
+    <lastmod>2015-03-30T00:30:25+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>http://chienlima.github.io/aboutme/</loc>
-    <lastmod>2015-03-27T13:22:18+08:00</lastmod>
+    <lastmod>2015-03-30T00:30:25+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>

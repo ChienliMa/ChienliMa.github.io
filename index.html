@@ -9,8 +9,7 @@
   <meta name="author" content="Chienli Ma">
 
   
-  <meta name="description" content="Just a post to test if catagory and rss feed works well.
-">
+  <meta name="description" content="So, the buggy judging system of python is unbearable, therefore I just turned to C++ and expected a better experience. Also, I need to learn C++ for &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -71,6 +70,1012 @@
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2015/03/30/leetcode-start-coding-with-c-plus-plus/">Leetcode battlefield:Start Coding With C++</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-03-30T00:24:06+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>30</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:24 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>So, the buggy judging system of python is unbearable, therefore I just turned to C++ and expected a better experience. Also, I need to learn  C++ for my future career. So, a good start. This post contains following problems:</p>
+
+<ul>
+<li>Reverse words</li>
+<li>Eval RPN</li>
+<li>Tree Traversal</li>
+</ul>
+
+
+<hr />
+
+<h3>Reverse words</h3>
+
+<p>Before solving this problem I never tried using std::string, I thought string operation in C++ is as hard as C. However, standard library really ease my pains. In fact, with the help of std, I think coding with C++ is much more easier and happier than coding with Ruby and Python now.</p>
+
+<h5>Question:</h5>
+
+<p>Given an input string, reverse the string word by word.</p>
+
+<h5>Basic logic:</h5>
+
+<p>The idea is simple, find each word in the sentence, push then in the stack and pop back after dealing the whole sentence. Be careful to the spaces in the head or tails of the sentence and the repeated spaces.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+</pre></td><td class='code'><pre><code class='cpp'><span class='line'><span class="k">class</span> <span class="nc">Solution</span> <span class="p">{</span>
+</span><span class='line'><span class="k">public</span><span class="o">:</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="n">reverseWords</span><span class="p">(</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">s</span> <span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="c1">// get the words in reverse order</span>
+</span><span class='line'>        <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">words</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">split</span><span class="p">(</span> <span class="n">s</span><span class="p">,</span> <span class="sc">&#39; &#39;</span><span class="p">,</span> <span class="n">words</span><span class="p">);</span>
+</span><span class='line'>        <span class="c1">// reconstruct</span>
+</span><span class='line'>        <span class="n">s</span> <span class="o">=</span> <span class="s">&quot;&quot;</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">if</span><span class="p">(</span> <span class="n">words</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span> <span class="p">)</span><span class="k">return</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">for</span><span class="p">(</span> <span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">words</span><span class="p">.</span><span class="n">size</span><span class="p">();</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">s</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">words</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+</span><span class='line'>            <span class="n">s</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="s">&quot; &quot;</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="c1">// delete last space</span>
+</span><span class='line'>        <span class="n">s</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span> <span class="n">s</span><span class="p">.</span><span class="n">length</span><span class="p">()</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kt">void</span> <span class="n">split</span><span class="p">(</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">s</span><span class="p">,</span> <span class="kt">char</span> <span class="n">c</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">v</span> <span class="p">)</span>
+</span><span class='line'>    <span class="p">{</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">begin</span><span class="p">,</span> <span class="n">last</span><span class="p">;</span>
+</span><span class='line'>        <span class="c1">// first word</span>
+</span><span class='line'>        <span class="n">begin</span> <span class="o">=</span> <span class="n">s</span><span class="p">.</span><span class="n">length</span><span class="p">()</span> <span class="o">-</span><span class="mi">1</span> <span class="p">;</span>
+</span><span class='line'>        <span class="n">last</span>  <span class="o">=</span> <span class="n">s</span><span class="p">.</span><span class="n">find_last_of</span><span class="p">(</span> <span class="n">c</span><span class="p">,</span> <span class="n">begin</span> <span class="p">);</span>
+</span><span class='line'>        <span class="k">if</span><span class="p">(</span> <span class="n">s</span><span class="p">.</span><span class="n">substr</span><span class="p">(</span> <span class="n">last</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">begin</span><span class="o">-</span><span class="n">last</span><span class="p">)</span> <span class="o">!=</span> <span class="s">&quot;&quot;</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">v</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">substr</span><span class="p">(</span> <span class="n">last</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">begin</span><span class="o">-</span><span class="n">last</span><span class="p">));</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="c1">// find next words</span>
+</span><span class='line'>        <span class="k">while</span><span class="p">(</span> <span class="n">last</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="n">and</span> <span class="n">begin</span> <span class="o">!=</span> <span class="o">-</span><span class="mi">1</span> <span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="c1">// find a word </span>
+</span><span class='line'>            <span class="n">begin</span> <span class="o">=</span> <span class="n">last</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>            <span class="n">last</span>  <span class="o">=</span> <span class="n">s</span><span class="p">.</span><span class="n">find_last_of</span><span class="p">(</span> <span class="n">c</span><span class="p">,</span> <span class="n">begin</span> <span class="p">);</span>
+</span><span class='line'>            <span class="c1">// if it&#39;s repeated split character, skip it</span>
+</span><span class='line'>            <span class="k">while</span><span class="p">(</span> <span class="n">last</span> <span class="o">==</span> <span class="n">begin</span> <span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="n">begin</span> <span class="o">=</span> <span class="n">last</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+</span><span class='line'>                <span class="n">last</span>  <span class="o">=</span> <span class="n">s</span><span class="p">.</span><span class="n">find_last_of</span><span class="p">(</span> <span class="n">c</span><span class="p">,</span> <span class="n">begin</span> <span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="c1">// skip if is last space</span>
+</span><span class='line'>            <span class="k">if</span><span class="p">(</span> <span class="n">s</span><span class="p">.</span><span class="n">substr</span><span class="p">(</span> <span class="n">last</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">begin</span><span class="o">-</span><span class="n">last</span><span class="p">)</span> <span class="o">!=</span> <span class="s">&quot;&quot;</span><span class="p">)</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="n">v</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">s</span><span class="p">.</span><span class="n">substr</span><span class="p">(</span> <span class="n">last</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">begin</span><span class="o">-</span><span class="n">last</span><span class="p">));</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<hr />
+
+<h3>evalRPN</h3>
+
+<h5>Question:</h5>
+
+<p>Evaluate the value of an arithmetic expression in Reverse Polish Notation. For example:
+    [&ldquo;2&rdquo;, &ldquo;1&rdquo;, &ldquo;+&rdquo;, &ldquo;3&rdquo;, &ldquo;*&rdquo;] -> ((2 + 1) * 3) -> 9</p>
+
+<h5>Basic logic:</h5>
+
+<p>Also simple idea: Iterater through the list, push numbers to a stack. Everytime we meet operaor, pop top 2 numbers and calculate the result, push the result to the stack. Finally, there will be only one number in the stack, which is the reuslt.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class='C++'><span class='line'><span class="k">class</span> <span class="nc">Solution</span> <span class="p">{</span>
+</span><span class='line'><span class="k">public</span><span class="o">:</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">evalRPN</span><span class="p">(</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">tokens</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">resultStack</span><span class="p">;</span>
+</span><span class='line'>        <span class="n">string</span> <span class="n">symbol</span><span class="p">;</span>
+</span><span class='line'>        <span class="kt">int</span> <span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">,</span> <span class="n">result</span><span class="p">;</span>
+</span><span class='line'>        <span class="kt">bool</span> <span class="n">isOperator</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">tokens</span><span class="p">.</span><span class="n">size</span><span class="p">();</span><span class="n">i</span><span class="o">++</span><span class="p">)</span>
+</span><span class='line'>        <span class="p">{</span>
+</span><span class='line'>            <span class="n">symbol</span> <span class="o">=</span> <span class="n">tokens</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+</span><span class='line'>            <span class="n">isOperator</span> <span class="o">=</span>  <span class="n">symbol</span><span class="o">==</span><span class="s">&quot;+&quot;</span><span class="o">||</span><span class="n">symbol</span><span class="o">==</span><span class="s">&quot;-&quot;</span><span class="o">||</span><span class="n">symbol</span><span class="o">==</span><span class="s">&quot;*&quot;</span><span class="o">||</span><span class="n">symbol</span><span class="o">==</span><span class="s">&quot;/&quot;</span><span class="p">;</span>
+</span><span class='line'>            <span class="k">if</span><span class="p">(</span> <span class="o">!</span> <span class="n">isOperator</span> <span class="p">)</span>
+</span><span class='line'>                <span class="n">resultStack</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">stoi</span><span class="p">(</span><span class="n">symbol</span><span class="p">));</span>
+</span><span class='line'>            <span class="k">else</span>
+</span><span class='line'>            <span class="p">{</span>
+</span><span class='line'>                <span class="n">right</span> <span class="o">=</span> <span class="n">resultStack</span><span class="p">.</span><span class="n">back</span><span class="p">();</span>
+</span><span class='line'>                <span class="n">resultStack</span><span class="p">.</span><span class="n">pop_back</span><span class="p">();</span>
+</span><span class='line'>                <span class="n">left</span> <span class="o">=</span> <span class="n">resultStack</span><span class="p">.</span><span class="n">back</span><span class="p">();</span>
+</span><span class='line'>                <span class="n">resultStack</span><span class="p">.</span><span class="n">pop_back</span><span class="p">();</span>
+</span><span class='line'>                <span class="k">if</span><span class="p">(</span><span class="n">symbol</span><span class="o">==</span><span class="s">&quot;+&quot;</span><span class="p">)</span>
+</span><span class='line'>                    <span class="n">result</span> <span class="o">=</span> <span class="n">left</span> <span class="o">+</span> <span class="n">right</span><span class="p">;</span>
+</span><span class='line'>                <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">symbol</span> <span class="o">==</span><span class="s">&quot;-&quot;</span><span class="p">)</span>
+</span><span class='line'>                    <span class="n">result</span> <span class="o">=</span> <span class="n">left</span> <span class="o">-</span> <span class="n">right</span><span class="p">;</span>
+</span><span class='line'>                <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">symbol</span><span class="o">==</span><span class="s">&quot;*&quot;</span><span class="p">)</span>
+</span><span class='line'>                    <span class="n">result</span> <span class="o">=</span> <span class="n">left</span> <span class="o">*</span> <span class="n">right</span><span class="p">;</span>
+</span><span class='line'>                <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">symbol</span><span class="o">==</span><span class="s">&quot;/&quot;</span><span class="p">)</span>
+</span><span class='line'>                    <span class="n">result</span> <span class="o">=</span> <span class="n">left</span> <span class="o">/</span> <span class="n">right</span><span class="p">;</span>
+</span><span class='line'>                <span class="k">else</span>
+</span><span class='line'>                    <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&quot;ERROR&quot;</span><span class="p">;</span>
+</span><span class='line'>                <span class="n">resultStack</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">result</span><span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">resultStack</span><span class="p">.</span><span class="n">back</span><span class="p">();</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<hr />
+
+<h3>Tree traversal</h3>
+
+<h5>Basic logic:</h5>
+
+<p>Basic algo. There are 3 kind of traversal method: postorder, preorder and inorder.</p>
+
+<h5>PostOrder</h5>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">Solution</span> <span class="p">{</span>
+</span><span class='line'><span class="k">public</span><span class="o">:</span>
+</span><span class='line'>    <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">postorderTraversal</span><span class="p">(</span><span class="n">TreeNode</span> <span class="o">*</span><span class="n">root</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">v</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">if</span><span class="p">(</span> <span class="n">root</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">){</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">v</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">else</span><span class="p">{</span>
+</span><span class='line'>            <span class="k">if</span><span class="p">(</span> <span class="n">root</span><span class="o">-&gt;</span><span class="n">left</span> <span class="o">!=</span> <span class="nb">NULL</span> <span class="p">){</span>
+</span><span class='line'>                <span class="n">travel</span><span class="p">(</span> <span class="n">root</span><span class="o">-&gt;</span><span class="n">left</span><span class="p">,</span> <span class="n">v</span> <span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="k">if</span><span class="p">(</span> <span class="n">root</span><span class="o">-&gt;</span><span class="n">right</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">){</span>
+</span><span class='line'>                <span class="n">travel</span><span class="p">(</span> <span class="n">root</span><span class="o">-&gt;</span><span class="n">right</span><span class="p">,</span> <span class="n">v</span> <span class="p">);</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>            <span class="n">v</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">root</span><span class="o">-&gt;</span><span class="n">val</span><span class="p">);</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">v</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="n">travel</span><span class="p">(</span> <span class="n">TreeNode</span> <span class="o">*</span><span class="n">node</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">v</span> <span class="p">){</span>
+</span><span class='line'>        <span class="k">if</span><span class="p">(</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">left</span> <span class="o">!=</span> <span class="nb">NULL</span> <span class="p">){</span>
+</span><span class='line'>            <span class="n">travel</span><span class="p">(</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">left</span><span class="p">,</span> <span class="n">v</span> <span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">if</span><span class="p">(</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">right</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">){</span>
+</span><span class='line'>            <span class="n">travel</span><span class="p">(</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">right</span><span class="p">,</span> <span class="n">v</span> <span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="n">v</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">node</span><span class="o">-&gt;</span><span class="n">val</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h5>PreOrder</h5>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='c++'><span class='line'><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">Solution</span> <span class="p">{</span>
+</span><span class='line'><span class="k">public</span><span class="o">:</span>
+</span><span class='line'>    <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">preorderTraversal</span><span class="p">(</span><span class="n">TreeNode</span> <span class="o">*</span><span class="n">root</span><span class="p">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="n">v</span><span class="p">;</span>
+</span><span class='line'>        <span class="k">if</span><span class="p">(</span> <span class="n">root</span> <span class="o">==</span> <span class="nb">NULL</span> <span class="p">){</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">v</span><span class="p">;</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="n">v</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">root</span><span class="o">-&gt;</span><span class="n">val</span><span class="p">);</span>
+</span><span class='line'>        <span class="k">if</span><span class="p">(</span> <span class="n">root</span><span class="o">-&gt;</span><span class="n">left</span> <span class="p">){</span>
+</span><span class='line'>            <span class="n">travel</span><span class="p">(</span> <span class="n">root</span><span class="o">-&gt;</span><span class="n">left</span><span class="p">,</span> <span class="n">v</span> <span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">if</span><span class="p">(</span> <span class="n">root</span><span class="o">-&gt;</span><span class="n">right</span> <span class="p">){</span>
+</span><span class='line'>            <span class="n">travel</span><span class="p">(</span> <span class="n">root</span><span class="o">-&gt;</span><span class="n">right</span><span class="p">,</span> <span class="n">v</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">v</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kt">void</span> <span class="n">travel</span><span class="p">(</span><span class="n">TreeNode</span> <span class="o">*</span><span class="n">node</span><span class="p">,</span> <span class="n">vector</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">v</span><span class="p">){</span>
+</span><span class='line'>        <span class="n">v</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">node</span><span class="o">-&gt;</span><span class="n">val</span><span class="p">);</span>
+</span><span class='line'>        <span class="k">if</span><span class="p">(</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">left</span> <span class="p">){</span>
+</span><span class='line'>            <span class="n">travel</span><span class="p">(</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">left</span><span class="p">,</span> <span class="n">v</span> <span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>        <span class="k">if</span><span class="p">(</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">right</span> <span class="p">){</span>
+</span><span class='line'>            <span class="n">travel</span><span class="p">(</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">right</span><span class="p">,</span> <span class="n">v</span><span class="p">);</span>
+</span><span class='line'>        <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/03/30/leetcode-some-python-codes/">Leetcode battlefield:Some Python Codes</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-03-30T00:22:37+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>30</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:22 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I collected a bunches of leetcode code solutions and now put them in one post. This post contains the following questions:</p>
+
+<pre><code>* BST Iterator
+* Factorial Trailing Zeros
+* Excel number
+* Decimal
+* Find Peak Element
+* Min stack
+* Majority elements
+* Trailing zeros
+* Tree Travel
+</code></pre>
+
+<p>Also, after realing leetcode online judge have numerous bug in python test case, I decided to turn to C++. So, here comes the solutions.</p>
+
+<hr />
+
+<h3>BST Iterator</h3>
+
+<h5>Question:</h5>
+
+<p>Implement an iterator over a binary search tree (BST). Your iterator will be initialized with the root node of a BST.
+Calling <code>next()</code> will return the next smallest number in the BST.
+Note: <code>next()</code> and <code>hasNext()</code> should run in average <code>O(1)</code> time and uses <code>O(h)</code> memory, where h is the height of the tree.</p>
+
+<h5>Basic logic:</h5>
+
+<p>The smallest value is will be on the left-most node, therefore the first thing to do is to dive to the deepest ad left-most of the tree. Next we can return the value of the middle node, then its left node. A list of nodes on path should be maintain to avoid return repeated value.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">class</span> <span class="nc">BSTIterator</span><span class="p">:</span>
+</span><span class='line'>    <span class="c"># @param root, a binary search tree&#39;s root node</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root</span><span class="p">):</span>
+</span><span class='line'>        <span class="c"># ancestors of current node, </span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">ancestors</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c"># current node, initialized by root</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="bp">None</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c"># current point to the  smallest value</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="n">root</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">dive</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c"># @return a boolean, whether we have a next smallest number</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">hasNext</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">!=</span> <span class="bp">None</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">hasLeft</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hasNext</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">hasRight</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">hasNext</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c"># @return an integer, the next smallest number</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">next</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>        <span class="c"># every time we dive first,</span>
+</span><span class='line'>        <span class="c"># so the smallest value is the current node</span>
+</span><span class='line'>        <span class="n">rval</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="o">.</span><span class="n">val</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">if</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">hasRight</span><span class="p">():</span>
+</span><span class='line'>            <span class="c"># if no right nodes</span>
+</span><span class='line'>            <span class="c"># the next smallest value will be current node&#39;s parent</span>
+</span><span class='line'>            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">ancestors</span><span class="p">)</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span><span class='line'>                <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="bp">None</span>
+</span><span class='line'>            <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>                <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">ancestors</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+</span><span class='line'>        <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>            <span class="c"># if there is right node,  it&#39;s value will smaller than parent&#39;s, </span>
+</span><span class='line'>            <span class="c"># so step into it, then dive to left-most</span>
+</span><span class='line'>            <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="o">.</span><span class="n">right</span>
+</span><span class='line'>            <span class="bp">self</span><span class="o">.</span><span class="n">dive</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">return</span> <span class="n">rval</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">dive</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">while</span> <span class="bp">self</span><span class="o">.</span><span class="n">hasLeft</span><span class="p">():</span>
+</span><span class='line'>            <span class="bp">self</span><span class="o">.</span><span class="n">ancestors</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="p">)</span>
+</span><span class='line'>            <span class="bp">self</span><span class="o">.</span><span class="n">current</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">current</span><span class="o">.</span><span class="n">left</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<hr />
+
+<h3>Excel column number</h3>
+
+<h5>Qusetion</h5>
+
+<p>Given Excel column number, return the corresponding digit number</p>
+
+<h5>Basic logic</h5>
+
+<p>A conversion of number systems( thought not a typical one) . First we map characters to numbers, them multiply digit in the <code>Nth</code> location with <code>26^n</code>, sum and get the result.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+</span><span class='line'>    <span class="c"># @param s, a string</span>
+</span><span class='line'>    <span class="c"># @return an integer</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">map</span> <span class="o">=</span><span class="s">&#39;ABCDEFGHIJKLMNOPQRSTUVWXYZ&#39;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">titleToNumber</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">s</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">rval</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)):</span>
+</span><span class='line'>            <span class="c"># need to revese the string</span>
+</span><span class='line'>            <span class="n">rval</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">char2Int</span><span class="p">(</span><span class="n">s</span><span class="p">[</span> <span class="nb">len</span><span class="p">(</span><span class="n">s</span><span class="p">)</span> <span class="o">-</span> <span class="n">i</span> <span class="o">-</span><span class="mi">1</span><span class="p">])</span><span class="o">*</span><span class="p">(</span><span class="mi">26</span><span class="o">**</span><span class="n">i</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">rval</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">char2Int</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">char</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">map</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">char</span><span class="p">)</span><span class="o">+</span><span class="mi">1</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<hr />
+
+<h3>Majority element</h3>
+
+<h6>Question:</h6>
+
+<p>Given an array of size n, find the majority element. The majority element is the element that appears more than <code>n/2</code> times.</p>
+
+<h6>Basic logic:</h6>
+
+<p>Use a counter(map) to calculate how many times each elements has occured and return if <code>times &gt; length/2</code>.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+</span><span class='line'>    <span class="c"># @param num, a list of integers</span>
+</span><span class='line'>    <span class="c"># @return an integer</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">majorityElement</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
+</span><span class='line'>        <span class="nb">map</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class='line'>        <span class="n">length</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">num</span><span class="p">))</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="n">num</span><span class="p">:</span>
+</span><span class='line'>            <span class="k">try</span><span class="p">:</span>
+</span><span class='line'>                <span class="nb">map</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>            <span class="k">except</span><span class="p">:</span>
+</span><span class='line'>                <span class="nb">map</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'>            <span class="k">if</span> <span class="nb">map</span><span class="p">[</span><span class="n">n</span><span class="p">]</span> <span class="o">&gt;=</span> <span class="n">length</span><span class="o">/</span><span class="mi">2</span><span class="p">:</span>
+</span><span class='line'>                <span class="k">return</span> <span class="n">n</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<hr />
+
+<h3>Trailing zeros.</h3>
+
+<h5>Question:</h5>
+
+<p>Given an integer n, return the number of trailing zeroes in n!.</p>
+
+<h5>Basic logics:</h5>
+
+<p>This is more a math problem than a code problem. Notice that <code>1 x 2 x 3 ... x 5 ... x 10 ...</code> with every <code>5</code>( or <code>n x 5</code> ) there must be a <code>2</code>(or<code>nx2</code>). And the trailing zeros must be the result of <code>(2x5)^n</code>. Therefore, the problem becomes &lsquo;How many 5 are there in it&rsquo;s factors&rsquo;. ( Need to rewrite this paragraph )</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+</span><span class='line'>    <span class="c"># @return an integer</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">trailingZeroes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">num</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>        <span class="n">k</span> <span class="o">=</span> <span class="mi">1</span>
+</span><span class='line'>        <span class="k">while</span> <span class="mi">5</span><span class="o">**</span><span class="n">k</span> <span class="o">&lt;=</span> <span class="n">n</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">num</span> <span class="o">+=</span> <span class="nb">int</span><span class="p">(</span><span class="n">n</span><span class="o">/</span><span class="p">(</span><span class="mi">5</span><span class="o">**</span><span class="n">k</span><span class="p">))</span>
+</span><span class='line'>            <span class="n">k</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">num</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<hr />
+
+<h3>Find peak elements</h3>
+
+<h6>Questions</h6>
+
+<p>Given an input array where num[i] ≠ num[i+1], find a peak element and return its index.</p>
+
+<h6>Basic logic</h6>
+
+<p>Easy problem, just iter over and compare each element with its neighbours. If the num[i] can equals num[i+], we first deduplicate, and then compare. Need some attentions on the conner case( length = 0,1 or the peak occurs on the head or tails)</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">class</span> <span class="nc">Solution</span><span class="p">:</span>
+</span><span class='line'>    <span class="c"># @param num, a list of integer</span>
+</span><span class='line'>    <span class="c"># @return an integer</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">findMin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">num</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span class='line'>        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="n">num</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">num</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</span><span class='line'>        <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>            <span class="c"># deduplicate</span>
+</span><span class='line'>            <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span> <span class="ow">and</span> <span class="n">num</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">num</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+</span><span class='line'>                <span class="n">num</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+</span><span class='line'>            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">num</span><span class="p">)):</span>
+</span><span class='line'>                <span class="k">try</span><span class="p">:</span>
+</span><span class='line'>                    <span class="k">if</span> <span class="n">num</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">==</span> <span class="n">num</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]:</span>
+</span><span class='line'>                        <span class="n">num</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+</span><span class='line'>                <span class="k">except</span><span class="p">:</span>
+</span><span class='line'>                    <span class="k">break</span>
+</span><span class='line'>            <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">findMinNoRepeat</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">findMinNoRepeat</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">num</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+</span><span class='line'>        <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">num</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nb">min</span><span class="p">(</span><span class="n">num</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span><span class="n">num</span><span class="p">[</span><span class="mi">1</span><span class="p">])</span>
+</span><span class='line'>        <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">buf</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>            <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>            <span class="n">length</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">num</span><span class="p">)</span>
+</span><span class='line'>            <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">xrange</span><span class="p">(</span><span class="mi">3</span><span class="p">):</span>
+</span><span class='line'>                <span class="n">buf</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">num</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+</span><span class='line'>                <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>            <span class="n">index</span> <span class="o">-=</span> <span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+</span><span class='line'>                <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">isMax</span><span class="p">(</span><span class="n">buf</span><span class="p">):</span>
+</span><span class='line'>                    <span class="k">return</span> <span class="n">buf</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</span><span class='line'>                <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>                    <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>                    <span class="n">index</span> <span class="o">%=</span> <span class="n">length</span>
+</span><span class='line'>                    <span class="k">if</span> <span class="n">num</span><span class="p">[</span><span class="n">index</span><span class="p">]</span> <span class="o">!=</span> <span class="n">buf</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+</span><span class='line'>                        <span class="n">buf</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</span><span class='line'>                        <span class="n">buf</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">num</span><span class="p">[</span><span class="n">index</span><span class="p">])</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">isMax</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">buf</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">buf</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">&lt;</span><span class="n">buf</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">and</span> <span class="n">buf</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span><span class="o">&gt;</span><span class="n">buf</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<hr />
+
+<h3>Min Stack</h3>
+
+<h5>question</h5>
+
+<p>Design a stack that supports push, pop, top, and retrieving the minimum element in constant time.</p>
+
+<pre><code>* push(x) -- Push element x onto stack.
+* pop() -- Removes the element on top of the stack.
+* top() -- Get the top element.
+* getMin() -- Retrieve the minimum element in the stack.
+</code></pre>
+
+<h5>Basic logic</h5>
+
+<p>The key is to maintain double stack: one for normal push() and pop(), the other for the operation getMin(). When a new min value is pushed, we also push it to the min_stack, when it pops, we also pop it from min_stack. So the minimum value is always on the top of min_stack.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">class</span> <span class="nc">MinStack</span><span class="p">:</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">node</span> <span class="o">=</span> <span class="bp">None</span><span class="p">):</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">stack</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">minStack</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c"># @param x, an integer</span>
+</span><span class='line'>    <span class="c"># @return an integer</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">push</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">stack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">minStack</span> <span class="o">==</span> <span class="p">[]</span> <span class="ow">or</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="bp">self</span><span class="o">.</span><span class="n">minStack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+</span><span class='line'>            <span class="bp">self</span><span class="o">.</span><span class="n">minStack</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c"># @return nothing</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">pop</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">val</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">stack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">val</span> <span class="o">==</span> <span class="bp">self</span><span class="o">.</span><span class="n">minStack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]:</span>
+</span><span class='line'>            <span class="bp">self</span><span class="o">.</span><span class="n">minStack</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c"># @return an integer</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">top</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">stack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c"># @return an integer</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">getMin</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">minStack</span><span class="p">[</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<hr />
+
+<h3>Fraction to Recurring Decimal</h3>
+
+<h5>Question</h5>
+
+<h5>Basic logics.</h5>
+
+<p>Easy job, just a little bit tedious. By implementing a long divide, we can easily find the answer. Remember to store every ( quotient，remainder )pairs so that we can know when it starts repeat itself. The python test case is wrong. See <a href="https://leetcode.com/discuss/28804/result-of-test-case-1-214748364-should-be-repeating-decimal">this post</a>. After this solution, I turned to C++, which should have better judge system.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">class</span> <span class="nc">Solution</span><span class="p">():</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+</span><span class='line'>        <span class="k">pass</span>
+</span><span class='line'>    <span class="c"># @return a string</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">fractionToDecimal</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">numerator</span><span class="p">,</span> <span class="n">denominator</span><span class="p">):</span>
+</span><span class='line'>        <span class="c"># corner case</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">numerator</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span><span class='line'>            <span class="k">return</span> <span class="s">&#39;0&#39;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c"># if no decimal number</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">numerator</span> <span class="o">%</span> <span class="n">denominator</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span><span class='line'>            <span class="k">return</span> <span class="nb">str</span><span class="p">(</span> <span class="n">numerator</span><span class="o">/</span><span class="n">denominator</span> <span class="p">)</span>
+</span><span class='line'>        <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>            <span class="c"># reduction of a fraction, not necessary</span>
+</span><span class='line'>            <span class="n">fraction</span> <span class="o">=</span> <span class="mi">2</span>
+</span><span class='line'>            <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+</span><span class='line'>                <span class="k">while</span> <span class="n">fraction</span> <span class="o">&lt;=</span> <span class="nb">min</span><span class="p">(</span> <span class="nb">abs</span><span class="p">(</span><span class="n">numerator</span><span class="p">),</span> <span class="nb">abs</span><span class="p">(</span><span class="n">denominator</span><span class="p">)</span> <span class="p">):</span>
+</span><span class='line'>                    <span class="k">if</span> <span class="n">numerator</span> <span class="o">%</span> <span class="n">fraction</span> <span class="o">==</span> <span class="mi">0</span> <span class="ow">and</span> <span class="n">denominator</span> <span class="o">%</span> <span class="n">fraction</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span><span class='line'>                        <span class="n">numerator</span> <span class="o">/=</span> <span class="n">fraction</span>
+</span><span class='line'>                        <span class="n">denominator</span> <span class="o">/=</span> <span class="n">fraction</span>
+</span><span class='line'>                        <span class="k">break</span>
+</span><span class='line'>                    <span class="n">fraction</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="c"># if it&#39;s end, end it. else ,restart again</span>
+</span><span class='line'>                <span class="k">if</span> <span class="n">fraction</span> <span class="o">&gt;=</span> <span class="nb">min</span><span class="p">(</span> <span class="nb">abs</span><span class="p">(</span><span class="n">numerator</span><span class="p">),</span> <span class="nb">abs</span><span class="p">(</span><span class="n">denominator</span><span class="p">)</span> <span class="p">):</span>
+</span><span class='line'>                    <span class="k">break</span>
+</span><span class='line'>                <span class="n">fraction</span> <span class="o">=</span> <span class="mi">2</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c"># Decomposition quality factor to find if demimal repeated itself, not necessary.</span>
+</span><span class='line'>            <span class="n">denom</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">denominator</span><span class="p">)</span>
+</span><span class='line'>            <span class="k">while</span> <span class="n">denom</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span><span class='line'>                    <span class="n">denom</span> <span class="o">/=</span> <span class="mi">2</span>
+</span><span class='line'>            <span class="k">while</span> <span class="n">denom</span> <span class="o">%</span> <span class="mi">5</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span><span class='line'>                    <span class="n">denom</span> <span class="o">/=</span><span class="mi">5</span>
+</span><span class='line'>            <span class="n">repeated</span> <span class="o">=</span> <span class="n">denom</span> <span class="o">!=</span> <span class="mi">1</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="n">result_list</span> <span class="o">=</span> <span class="p">[]</span>
+</span><span class='line'>            <span class="c"># get the symbol of final result</span>
+</span><span class='line'>            <span class="k">if</span> <span class="n">numerator</span><span class="o">*</span><span class="n">denominator</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">result_list</span> <span class="o">+=</span> <span class="p">[(</span><span class="s">&#39;-&#39;</span><span class="p">,</span><span class="s">&#39;-&#39;</span><span class="p">)]</span>
+</span><span class='line'>            <span class="n">numerator</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">numerator</span><span class="p">)</span>
+</span><span class='line'>            <span class="n">denominator</span> <span class="o">=</span> <span class="nb">abs</span> <span class="p">(</span><span class="n">denominator</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>            <span class="c"># start long divide loop( core algo )</span>
+</span><span class='line'>            <span class="n">add_dot</span> <span class="o">=</span> <span class="bp">True</span>
+</span><span class='line'>            <span class="n">index</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>            <span class="k">while</span> <span class="bp">True</span><span class="p">:</span>
+</span><span class='line'>                <span class="c"># long divide</span>
+</span><span class='line'>                <span class="n">quotient</span> <span class="o">=</span> <span class="n">numerator</span> <span class="o">/</span> <span class="n">denominator</span>
+</span><span class='line'>                <span class="n">remainder</span> <span class="o">=</span> <span class="n">numerator</span> <span class="o">%</span> <span class="n">denominator</span>
+</span><span class='line'>                <span class="n">numerator</span> <span class="o">=</span> <span class="n">remainder</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="c"># check if repreated, if not, ready for the next division</span>
+</span><span class='line'>                <span class="k">if</span> <span class="p">(</span><span class="n">remainder</span><span class="p">,</span> <span class="n">quotient</span><span class="p">)</span> <span class="ow">in</span> <span class="n">result_list</span><span class="p">:</span>
+</span><span class='line'>                    <span class="n">repreat_start_locaation</span> <span class="o">=</span> <span class="n">result_list</span><span class="o">.</span><span class="n">index</span><span class="p">((</span><span class="n">remainder</span><span class="p">,</span> <span class="n">quotient</span><span class="p">))</span>
+</span><span class='line'>                    <span class="n">result_list</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span> <span class="n">repreat_start_locaation</span><span class="p">,</span> <span class="p">(</span> <span class="s">&#39;(&#39;</span><span class="p">,</span> <span class="s">&#39;(&#39;</span> <span class="p">)</span> <span class="p">)</span>
+</span><span class='line'>                    <span class="n">result_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span> <span class="s">&#39;)&#39;</span> <span class="p">,</span> <span class="s">&#39;)&#39;</span> <span class="p">)</span> <span class="p">)</span>
+</span><span class='line'>                    <span class="k">break</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="c"># append this result of division</span>
+</span><span class='line'>                <span class="n">result_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="n">remainder</span><span class="p">,</span> <span class="n">quotient</span><span class="p">)</span> <span class="p">)</span>
+</span><span class='line'>                <span class="c"># if remainder is 0, it&#39;s not a repreated number                    </span>
+</span><span class='line'>                <span class="k">if</span> <span class="n">remainder</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+</span><span class='line'>                    <span class="k">break</span>
+</span><span class='line'>                <span class="k">if</span> <span class="n">add_dot</span><span class="p">:</span>
+</span><span class='line'>                    <span class="n">result_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span> <span class="p">(</span><span class="s">&#39;.&#39;</span><span class="p">,</span><span class="s">&#39;.&#39;</span><span class="p">)</span> <span class="p">)</span>
+</span><span class='line'>                    <span class="n">add_dot</span> <span class="o">=</span> <span class="bp">False</span>
+</span><span class='line'>                <span class="n">numerator</span> <span class="o">*=</span> <span class="mi">10</span>
+</span><span class='line'>
+</span><span class='line'>                <span class="n">index</span> <span class="o">+=</span> <span class="mi">1</span>
+</span><span class='line'>                <span class="k">if</span> <span class="n">index</span> <span class="o">&gt;</span> <span class="mi">100</span><span class="p">:</span>
+</span><span class='line'>                    <span class="k">break</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>            <span class="c"># construck result</span>
+</span><span class='line'>            <span class="n">result_list</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+</span><span class='line'>            <span class="n">result_str</span> <span class="o">=</span> <span class="s">&#39;&#39;</span>
+</span><span class='line'>            <span class="k">while</span> <span class="nb">len</span><span class="p">(</span><span class="n">result_list</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+</span><span class='line'>                <span class="n">remainder</span><span class="p">,</span> <span class="n">quotient</span> <span class="o">=</span> <span class="n">result_list</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span>
+</span><span class='line'>                <span class="n">result_str</span> <span class="o">+=</span> <span class="nb">str</span><span class="p">(</span><span class="n">quotient</span><span class="p">)</span>
+</span><span class='line'>            <span class="k">return</span> <span class="n">result_str</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2015/03/27/gsoc2015-blog-test/">GSoC2015_blog_test</a></h1>
     
     
@@ -100,7 +1105,7 @@
       
   <header>
     
-      <h1 class="entry-title"><a href="/blog/2015/03/12/largest-number-and-tdd/">Leetcode Battle Field: largestNum (and TDD?)</a></h1>
+      <h1 class="entry-title"><a href="/blog/2015/03/12/largest-number-and-tdd/">Leetcode Battlefield: largestNum (and TDD?)</a></h1>
     
     
       <p class="meta">
@@ -662,23 +1667,23 @@
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/03/30/leetcode-start-coding-with-c-plus-plus/">Leetcode battlefield:Start Coding With C++</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2015/03/30/leetcode-some-python-codes/">Leetcode battlefield:Some Python Codes</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/03/27/gsoc2015-blog-test/">GSoC2015_blog_test</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2015/03/12/largest-number-and-tdd/">Leetcode Battle Field: largestNum (and TDD?)</a>
+        <a href="/blog/2015/03/12/largest-number-and-tdd/">Leetcode Battlefield: largestNum (and TDD?)</a>
       </li>
     
       <li class="post">
         <a href="/blog/2015/03/11/day2015-dot-3-10/">Leetcode Battle Field and 面试小日记</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/03/06/learn-or-not/">学还是不学？这是一个问题.</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/01/16/have-a-try-on-octopress/">Have a Try on Octopress</a>
       </li>
     
   </ul>
