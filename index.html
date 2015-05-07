@@ -9,7 +9,7 @@
   <meta name="author" content="Chienli Ma">
 
   
-  <meta name="description" content="So, the buggy judging system of python is unbearable, therefore I just turned to C++ and expected a better experience. Also, I need to learn C++ for &hellip;">
+  <meta name="description" content="It&rsquo;s been a week and a half since google-melange anounced the accepted student for google summer of code. I was luckcy enough to be accepted by &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,6 +64,377 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/05/07/first-look-into-theano-core/">First Look Into Theano Core</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-05-07T11:08:32+08:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>7</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>11:08 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>It&rsquo;s been a week and a half since google-melange anounced the accepted student for google summer of code. I was luckcy enough to be accepted by Theano &ndash; sub-foundation of Python organization, to help them add new features: Allow user to modify compiled function. As scheduled, from 27th April to 23rd May is the community bounding period. During these days I ought to get familiar with Theano core code and Theano dev community.</p>
+
+<p>Before the application started, I&rsquo;ve dived into Theano cored and got the basic idea of what I&#8217;am going to do. However, to make the idea more clear and to fit the requirement that student should post every week about their progress. I decide to write two post about Theano core &ndash; about how theano work. This is the first post. This post will talk about what is a function? And how a function is generate.</p>
+
+<h2>How a function is generated?</h2>
+
+<p> Just recall how we compiled a function <code>func = theano.function( [ inputs ], output )</code>, we can know that we should start out journey from method  <code>function()</code>, which locates in  <code>theano/compile/founction.py</code>.<br/>
+ In method <code>function()</code>, after some data verification, it will call <code>orig_func()</code> or <code>pfunc()</code> which return a <code>function</code> that user will get. Since <code>pfunc()</code> will also call <code>orig_func()</code>, we are going to look into <code>pfunc()</code> first.</p>
+
+<h3>pfunc.py</h3>
+
+<p> <code>pfunc()</code> have two major tasks:</p>
+
+<ul>
+<li>Transfer input_variable into <code>In()</code> instances. So does <code>shared_variable</code>. ( In function graph,  SharedVariabls are treated as input, updates are treated as output ).</li>
+<li>Rebuild computational graph using <code>updates</code> and <code>inputs</code>, transform output into <code>Out</code>  instances.</li>
+</ul>
+
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">pfunc</span><span class="p">(</span> <span class="o">...</span> <span class="n">some</span> <span class="n">arguments</span> <span class="o">...</span> <span class="p">):</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c"># Clones the replacements named in the givens argument, and points each Var1 to</span>
+</span><span class='line'>    <span class="c"># the clone of Var2.</span>
+</span><span class='line'>    <span class="c"># Transform params into theano.compile.In objects.</span>
+</span><span class='line'>    <span class="n">inputs</span> <span class="o">=</span> <span class="p">[</span><span class="n">_pfunc_param_to_in</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">allow_downcast</span><span class="o">=</span><span class="n">allow_input_downcast</span><span class="p">)</span>
+</span><span class='line'>                <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="n">params</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c">#  clones the outputs and the update expressions.  This rebuilds a computation graph</span>
+</span><span class='line'>    <span class="c"># from the inputs and the givens. ( Irrelative to me. Pass )</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">output_vars</span> <span class="o">=</span> <span class="n">rebuild_collect_shared</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span>
+</span><span class='line'>                                             <span class="n">in_variables</span><span class="p">,</span>
+</span><span class='line'>                                             <span class="n">replace</span><span class="o">=</span><span class="n">givens</span><span class="p">,</span>
+</span><span class='line'>                                             <span class="n">updates</span><span class="o">=</span><span class="n">updates</span><span class="p">,</span>
+</span><span class='line'>                                             <span class="n">rebuild_strict</span><span class="o">=</span><span class="n">rebuild_strict</span><span class="p">,</span>
+</span><span class='line'>                                             <span class="n">copy_inputs_over</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+</span><span class='line'>                                             <span class="n">no_default_updates</span><span class="o">=</span><span class="n">no_default_updates</span><span class="p">)</span>
+</span><span class='line'>    <span class="c"># extracting the arguments</span>
+</span><span class='line'>    <span class="n">input_variables</span><span class="p">,</span> <span class="n">cloned_outputs</span><span class="p">,</span> <span class="n">other_stuff</span> <span class="o">=</span> <span class="n">output_vars</span>
+</span><span class='line'>    <span class="n">clone_d</span><span class="p">,</span> <span class="n">update_d</span><span class="p">,</span> <span class="n">update_expr</span><span class="p">,</span> <span class="n">shared_inputs</span> <span class="o">=</span> <span class="n">other_stuff</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">iv</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">input_variables</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">i</span><span class="o">.</span><span class="n">variable</span> <span class="o">=</span> <span class="n">iv</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">for</span> <span class="n">sv</span> <span class="ow">in</span> <span class="n">shared_inputs</span><span class="p">:</span>
+</span><span class='line'>        <span class="c"># pass value of None here</span>
+</span><span class='line'>        <span class="c"># value will be stored in the resulting functions&#39; defaults list</span>
+</span><span class='line'>        <span class="c"># but since the value of shared variables never needs to be refed, it is not needed</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">sv</span> <span class="ow">in</span> <span class="n">update_d</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">si</span> <span class="o">=</span> <span class="n">In</span><span class="p">(</span><span class="n">variable</span><span class="o">=</span><span class="n">sv</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">sv</span><span class="o">.</span><span class="n">container</span><span class="p">,</span> <span class="n">mutable</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
+</span><span class='line'>                    <span class="n">borrow</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">update</span><span class="o">=</span><span class="n">update_d</span><span class="p">[</span><span class="n">sv</span><span class="p">],</span> <span class="n">shared</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">si</span> <span class="o">=</span> <span class="n">In</span><span class="p">(</span><span class="n">variable</span><span class="o">=</span><span class="n">sv</span><span class="p">,</span> <span class="n">value</span><span class="o">=</span><span class="n">sv</span><span class="o">.</span><span class="n">container</span><span class="p">,</span>
+</span><span class='line'>                    <span class="n">mutable</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span> <span class="n">borrow</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span> <span class="n">shared</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">inputs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">si</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">return</span> <span class="n">orig_function</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">cloned_outputs</span><span class="p">,</span> <span class="n">mode</span><span class="p">,</span>
+</span><span class='line'>            <span class="n">accept_inplace</span><span class="o">=</span><span class="n">accept_inplace</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="n">name</span><span class="p">,</span> <span class="n">profile</span><span class="o">=</span><span class="n">profile</span><span class="p">,</span>
+</span><span class='line'>            <span class="n">on_unused_input</span><span class="o">=</span><span class="n">on_unused_input</span><span class="p">,</span> <span class="n">output_keys</span><span class="o">=</span><span class="n">output_keys</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<hr />
+
+<h3>orig_func():</h3>
+
+<p>Now it time for a look into <code>orig_func()</code>.  <code>orig_func()</code> will again makes sure that inputs and outputs are transformed into <code>In</code> an <code>Out</code>. And then it will use <code>create</code> method in <code>FunctionMaker</code> to make a function, which will be return.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">def</span> <span class="nf">orig_function</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">accept_inplace</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+</span><span class='line'>                  <span class="n">name</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">profile</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">on_unused_input</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
+</span><span class='line'>                  <span class="n">output_keys</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c"># conver input variable into instances of In() instances</span>
+</span><span class='line'>    <span class="n">inputs</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">convert_function_input</span><span class="p">,</span> <span class="n">inputs</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c"># so do outputs</span>
+</span><span class='line'>    <span class="k">if</span> <span class="n">outputs</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span><span class="p">:</span>
+</span><span class='line'>        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
+</span><span class='line'>            <span class="n">outputs</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="n">FunctionMaker</span><span class="o">.</span><span class="n">wrap_out</span><span class="p">,</span> <span class="n">outputs</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">outputs</span> <span class="o">=</span> <span class="n">FunctionMaker</span><span class="o">.</span><span class="n">wrap_out</span><span class="p">(</span><span class="n">outputs</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c"># In()s and Out()s will be passed into FunctionMaker and a function will be create from it by calling create() method.</span>
+</span><span class='line'>    <span class="n">fn</span> <span class="o">=</span> <span class="n">Maker</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span>
+</span><span class='line'>                   <span class="n">outputs</span><span class="p">,</span>
+</span><span class='line'>                   <span class="n">mode</span><span class="p">,</span>
+</span><span class='line'>                   <span class="n">accept_inplace</span><span class="o">=</span><span class="n">accept_inplace</span><span class="p">,</span>
+</span><span class='line'>                   <span class="n">profile</span><span class="o">=</span><span class="n">profile</span><span class="p">,</span>
+</span><span class='line'>                   <span class="n">on_unused_input</span><span class="o">=</span><span class="n">on_unused_input</span><span class="p">,</span>
+</span><span class='line'>                   <span class="n">output_keys</span> <span class="o">=</span> <span class="n">output_keys</span><span class="p">)</span><span class="o">.</span><span class="n">create</span><span class="p">(</span>
+</span><span class='line'>                       <span class="n">defaults</span><span class="p">)</span>         <span class="c">#     ^^^^ </span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<hr />
+
+<h3>FunctionMaker:</h3>
+
+<p> <code>FunctionMaker.__init()__</code> is where <code>fgraph</code> is extracted and optimized. <code>FuncitonMaker.create()</code> is where <code>function</code> will be compiled and linked. In fact, <code>FunctionMaker.linker.make_thunk()</code> is where <code>function</code> is linked.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="k">class</span> <span class="nc">FunctionMaker</span><span class="p">:</span>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span> <span class="o">...</span><span class="n">args</span><span class="o">...</span> <span class="p">):</span>
+</span><span class='line'>        <span class="c"># again, make sure that input/output are tranformed into In and Out</span>
+</span><span class='line'>        <span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span> <span class="o">=</span> <span class="nb">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wrap_in</span><span class="p">,</span> <span class="n">inputs</span><span class="p">),</span> <span class="nb">map</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">wrap_out</span><span class="p">,</span> <span class="n">outputs</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c"># ???</span>
+</span><span class='line'>        <span class="n">_inputs</span> <span class="o">=</span> <span class="n">gof</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">inputs</span><span class="p">([</span><span class="n">o</span><span class="o">.</span><span class="n">variable</span> <span class="k">for</span> <span class="n">o</span> <span class="ow">in</span> <span class="n">outputs</span><span class="p">]</span> <span class="o">+</span> <span class="p">[</span><span class="n">i</span><span class="o">.</span><span class="n">update</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">inputs</span> <span class="k">if</span> <span class="nb">getattr</span><span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="s">&#39;update&#39;</span><span class="p">,</span> <span class="bp">False</span><span class="p">)])</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c"># make indices ... which is useless</span>
+</span><span class='line'>        <span class="n">indices</span> <span class="o">=</span> <span class="p">[[</span><span class="nb">input</span><span class="p">]</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">expand_in</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">_inputs</span><span class="p">)</span> <span class="k">for</span> <span class="nb">input</span> <span class="ow">in</span> <span class="n">inputs</span><span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c"># get fgraph</span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">fgraph</span> <span class="ow">is</span> <span class="n">Node</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">fgraph</span><span class="p">,</span> <span class="n">additional_outputs</span> <span class="o">=</span> <span class="n">std_fgraph</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">,</span> <span class="n">accept_inplace</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">_</span><span class="p">,</span> <span class="n">additional_outputs</span> <span class="o">=</span> <span class="n">std_fgraph</span><span class="p">(</span><span class="n">inputs</span><span class="p">,</span> <span class="n">outputs</span><span class="p">,</span> <span class="n">accept_inplace</span><span class="p">)</span>
+</span><span class='line'>        <span class="bp">self</span><span class="o">.</span><span class="n">fgraph</span> <span class="o">=</span> <span class="n">fgraph</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c"># fetch optimizor and linker</span>
+</span><span class='line'>        <span class="n">optimizer</span><span class="p">,</span> <span class="n">linker</span> <span class="o">=</span> <span class="n">mode</span><span class="o">.</span><span class="n">optimizer</span><span class="p">,</span> <span class="n">copy</span><span class="o">.</span><span class="n">copy</span><span class="p">(</span><span class="n">mode</span><span class="o">.</span><span class="n">linker</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c"># optimize fgraph</span>
+</span><span class='line'>        <span class="c"># if need_opt:</span>
+</span><span class='line'>            <span class="c"># optimization code here</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c"># linker accept fgraph </span>
+</span><span class='line'>        <span class="k">if</span> <span class="n">no_borrow</span><span class="p">:</span>
+</span><span class='line'>            <span class="bp">self</span><span class="o">.</span><span class="n">linker</span> <span class="o">=</span> <span class="n">linker</span><span class="o">.</span><span class="n">accept</span><span class="p">(</span><span class="n">fgraph</span><span class="p">,</span> <span class="n">no_recycling</span><span class="o">=</span><span class="n">infer_reuse_pattern</span><span class="p">(</span><span class="n">fgraph</span><span class="p">,</span> <span class="n">no_borrow</span><span class="p">))</span>
+</span><span class='line'>        <span class="k">else</span><span class="p">:</span>
+</span><span class='line'>            <span class="bp">self</span><span class="o">.</span><span class="n">linker</span> <span class="o">=</span> <span class="n">linker</span><span class="o">.</span><span class="n">accept</span><span class="p">(</span><span class="n">fgraph</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="k">if</span> <span class="nb">hasattr</span><span class="p">(</span><span class="n">linker</span><span class="p">,</span> <span class="s">&#39;accept_var_updates&#39;</span><span class="p">):</span>
+</span><span class='line'>            <span class="c"># hacky thing so VMLinker knows about updates</span>
+</span><span class='line'>            <span class="bp">self</span><span class="o">.</span><span class="n">linker</span><span class="o">.</span><span class="n">accept_var_updates</span><span class="p">(</span>
+</span><span class='line'>                    <span class="n">fgraph_updated_vars</span><span class="p">(</span><span class="n">fgraph</span><span class="p">,</span> <span class="n">inputs</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c"># some other configeration here</span>
+</span><span class='line'>        <span class="c"># ...</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">input_storage</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span> <span class="n">trustme</span><span class="o">=</span><span class="bp">False</span><span class="p">):</span>
+</span><span class='line'>    <span class="sd">&quot;&quot;&quot;</span>
+</span><span class='line'><span class="sd">    Create a function.</span>
+</span><span class='line'>
+</span><span class='line'><span class="sd">    Input storage is the &#39;value&#39; attribute of each In instances</span>
+</span><span class='line'><span class="sd">    &quot;&quot;&quot;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c"># construct input_storage_list and default list</span>
+</span><span class='line'>        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">((</span><span class="nb">input</span><span class="p">,</span> <span class="n">indices</span><span class="p">,</span> <span class="n">subinputs</span><span class="p">),</span> <span class="n">input_storage_i</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">,</span> <span class="n">input_storage</span><span class="p">)):</span>
+</span><span class='line'>            <span class="c"># a lot of codes here.</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="sd">&quot;&quot;&quot;</span>
+</span><span class='line'><span class="sd">        Q: What&#39;s indices?</span>
+</span><span class='line'><span class="sd">        List of (SymbolicInput, incide, [SymbolicInput..]). The first one is the </span>
+</span><span class='line'><span class="sd">        input vaiable; the incide is the index of the input in the input list; </span>
+</span><span class='line'><span class="sd">        the [SymIn...] the relevant input(?); </span>
+</span><span class='line'><span class="sd">        According to the document, the last two is deprecated. So it can be regarded as list of SymbolicInput.</span>
+</span><span class='line'><span class="sd">    </span>
+</span><span class='line'><span class="sd">        Q: What&#39;s defaults?</span>
+</span><span class='line'><span class="sd">        A: List of 3-tuples. Each tuple corresponds to one input_storage. </span>
+</span><span class='line'><span class="sd">        ( </span>
+</span><span class='line'><span class="sd">          Bool: Is this input required at each function call?,  </span>
+</span><span class='line'><span class="sd">          Bool: Should this inputs value be reverted to default value after each call? </span>
+</span><span class='line'><span class="sd">          AnyType: The value(storage) associated with this input.</span>
+</span><span class='line'><span class="sd">        )</span>
+</span><span class='line'><span class="sd">        &quot;&quot;&quot;</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c"># call make_thunk() from linker and get fn</span>
+</span><span class='line'>        <span class="k">try</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">traceback</span><span class="o">.</span><span class="n">limit</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>            <span class="n">_fn</span><span class="p">,</span> <span class="n">_i</span><span class="p">,</span> <span class="n">_o</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">linker</span><span class="o">.</span><span class="n">make_thunk</span><span class="p">(</span><span class="n">input_storage</span><span class="o">=</span><span class="n">input_storage_lists</span><span class="p">)</span>
+</span><span class='line'>            <span class="c"># ^   ^   ^ =&gt; (function, input_containers, output_containers)</span>
+</span><span class='line'>            <span class="c"># where function is a thunk that operates on the returned variables.</span>
+</span><span class='line'>            <span class="c"># Because the map_storag() in make_thunk()</span>
+</span><span class='line'>            <span class="c"># from here on, the input/output_storage represent all I/O of all relative nodes</span>
+</span><span class='line'>            <span class="c"># ALso, storage is container, Instead of SymbolicKit</span>
+</span><span class='line'>        <span class="k">finally</span><span class="p">:</span>
+</span><span class='line'>            <span class="n">theano</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">traceback</span><span class="o">.</span><span class="n">limit</span> <span class="o">=</span> <span class="n">limit_orig</span>
+</span><span class='line'>
+</span><span class='line'>        <span class="c"># get a function, here function_builder() is the constructor</span>
+</span><span class='line'>        <span class="c"># of class Function.</span>
+</span><span class='line'>        <span class="n">fn</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">function_builder</span><span class="p">(</span><span class="n">_fn</span><span class="p">,</span> <span class="n">_i</span><span class="p">,</span> <span class="n">_o</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">indices</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">outputs</span><span class="p">,</span>
+</span><span class='line'>                    <span class="n">defaults</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">unpack_single</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">return_none</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_keys</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">return</span> <span class="n">fn</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<hr />
+
+<h2>What&rsquo;s <code>theano.function</code>?</h2>
+
+<p>Each function is a callable object.  <code>theano.function</code> is not a python function. Instead, it a class with method <code>__call__()</code>.  Every funciton stores its own fgraph, maker, storages and many other configurations. However, the core of a function is a function <code>fn()</code> returned by <code>linker.make_thunk()</code>. Every time a function is called, it will first verify the input data, and then call <code>self.fn()</code> to get output values.</p>
+
+<hr />
+
+<p>Now I know how is a function borned. Also, I know that to complete my missions, I need to focus more on <code>FunctionMaker</code> and <code>Function</code> rather that <code>orig_func()</code> and <code>pfunc()</code>. However, there still exist some question, such as: What does <code>make_thunk()</code> do? and What is <code>In()</code>, <code>Out()</code> and <code>container</code>? In the next post, I will have a look at this and other relative data structures.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1667,6 +2038,10 @@ Note: <code>next()</code> and <code>hasNext()</code> should run in average <code
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/05/07/first-look-into-theano-core/">First Look Into Theano Core</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/03/30/leetcode-start-coding-with-c-plus-plus/">Leetcode battlefield:Start Coding With C++</a>
       </li>
     
@@ -1680,10 +2055,6 @@ Note: <code>next()</code> and <code>hasNext()</code> should run in average <code
     
       <li class="post">
         <a href="/blog/2015/03/12/largest-number-and-tdd/">Leetcode Battlefield: largestNum (and TDD?)</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/03/11/day2015-dot-3-10/">Leetcode Battle Field and 面试小日记</a>
       </li>
     
   </ul>

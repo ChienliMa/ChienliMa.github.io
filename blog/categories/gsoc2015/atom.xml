@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Gsoc2015 | Pony's Stable]]></title>
   <link href="http://chienlima.github.io/blog/categories/gsoc2015/atom.xml" rel="self"/>
   <link href="http://chienlima.github.io/"/>
-  <updated>2015-05-07T19:00:58+08:00</updated>
+  <updated>2015-05-07T19:10:23+08:00</updated>
   <id>http://chienlima.github.io/</id>
   <author>
     <name><![CDATA[Chienli Ma]]></name>
@@ -29,7 +29,7 @@
 
 <h3>pfunc.py</h3>
 
-<p><code>pfunc()</code> have two major tasks:</p>
+<p> <code>pfunc()</code> have two major tasks:</p>
 
 <ul>
 <li>Transfer input_variable into <code>In()</code> instances. So does <code>shared_variable</code>. ( In function graph,  SharedVariabls are treated as input, updates are treated as output ).</li>
@@ -115,7 +115,7 @@ def pfunc( ... some arguments ... ):
 
 <h3>FunctionMaker:</h3>
 
-<p><code>FunctionMaker.__init()__</code> is where <code>fgraph</code> is extracted and optimized. <code>FuncitonMaker.create()</code> is where <code>function</code> will be compiled and linked. In fact, <code>FunctionMaker.linker.make_thunk()</code> is where <code>function</code> is linked.</p>
+<p> <code>FunctionMaker.__init()__</code> is where <code>fgraph</code> is extracted and optimized. <code>FuncitonMaker.create()</code> is where <code>function</code> will be compiled and linked. In fact, <code>FunctionMaker.linker.make_thunk()</code> is where <code>function</code> is linked.</p>
 
 <pre><code class="python">class FunctionMaker:
     def __init__( ...args... ):
