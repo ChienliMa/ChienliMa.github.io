@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Gsoc2015 | Pony's Stable]]></title>
   <link href="http://chienlima.github.io/blog/categories/gsoc2015/atom.xml" rel="self"/>
   <link href="http://chienlima.github.io/"/>
-  <updated>2015-03-30T00:30:25+08:00</updated>
+  <updated>2015-05-07T18:58:24+08:00</updated>
   <id>http://chienlima.github.io/</id>
   <author>
     <name><![CDATA[Chienli Ma]]></name>
@@ -12,6 +12,207 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[First Look Into Theano Core]]></title>
+    <link href="http://chienlima.github.io/blog/2015/05/07/first-look-into-theano-core/"/>
+    <updated>2015-05-07T11:08:32+08:00</updated>
+    <id>http://chienlima.github.io/blog/2015/05/07/first-look-into-theano-core</id>
+    <content type="html"><![CDATA[<p>It&rsquo;s been a week and a half since google-melange anounced the accepted student for google summer of code. I was luckcy enough to be accepted by Theano &ndash; sub-foundation of Python organization, to help them add new features: Allow user to modify compiled function. As scheduled, from 27th April to 23rd May is the community bounding period. During these days I ought to get familiar with Theano core code and Theano dev community.</p>
+
+<p>Before the application started, I&rsquo;ve dived into Theano cored and got the basic idea of what I&#8217;am going to do. However, to make the idea more clear and to fit the requirement that student should post every week about their progress. I decide to write two post about Theano core &ndash; about how theano work. This is the first post. This post will talk about what is a function? And how a function is generate.</p>
+
+<h2>How a function is generated?</h2>
+
+<p> Just recall how we compiled a function <code>func = theano.function( [ inputs ], output )</code>, we can know that we should start out journey from method  <code>function()</code>, which locates in  <code>theano/compile/founction.py</code>.<br/>
+ In method <code>function()</code>, after some data verification, it will call <code>orig_function</code> or <code>pfunc</code> which return a <code>function</code> that user will get. Since <code>pfunc</code> will also call <code>orig_func</code>, we are going to look into <code>pfunc</code> first.</p>
+
+<h3>pfunc.py</h3>
+
+<p><code>pfunc</code> have two major tasks:</p>
+
+<ul>
+<li>Transfer input_variable into <code>In()</code> instances. So does <code>shared_variable</code>. ( In function graph,  SharedVariabls are treated as input, updates are treated as output ).</li>
+<li>Rebuild computational graph using <code>updates</code> and <code>inputs</code>, transform output into <code>Out</code>  instances.</li>
+</ul>
+
+
+<pre><code class="python">
+def pfunc( ... some arguments ... ):
+
+    # Clones the replacements named in the givens argument, and points each Var1 to
+    # the clone of Var2.
+    # Transform params into theano.compile.In objects.
+    inputs = [_pfunc_param_to_in(p, allow_downcast=allow_input_downcast)
+                for p in params]
+
+    #  clones the outputs and the update expressions.  This rebuilds a computation graph
+    # from the inputs and the givens. ( Irrelative to me. Pass )
+
+    output_vars = rebuild_collect_shared(outputs,
+                                             in_variables,
+                                             replace=givens,
+                                             updates=updates,
+                                             rebuild_strict=rebuild_strict,
+                                             copy_inputs_over=True,
+                                             no_default_updates=no_default_updates)
+    # extracting the arguments
+    input_variables, cloned_outputs, other_stuff = output_vars
+    clone_d, update_d, update_expr, shared_inputs = other_stuff
+
+    for i, iv in zip(inputs, input_variables):
+        i.variable = iv
+
+    for sv in shared_inputs:
+        # pass value of None here
+        # value will be stored in the resulting functions' defaults list
+        # but since the value of shared variables never needs to be refed, it is not needed
+        if sv in update_d:
+            si = In(variable=sv, value=sv.container, mutable=True,
+                    borrow=True, update=update_d[sv], shared=True)
+        else:
+            si = In(variable=sv, value=sv.container,
+                    mutable=False, borrow=True, shared=True)
+        inputs.append(si)
+
+    return orig_function(inputs, cloned_outputs, mode,
+            accept_inplace=accept_inplace, name=name, profile=profile,
+            on_unused_input=on_unused_input, output_keys=output_keys
+</code></pre>
+
+<hr />
+
+<h3>orig_func():</h3>
+
+<p>Now it time for a look into <code>orig_func</code>.  <code>orig_func</code> will again makes sure that inputs and outputs are transformed into <code>In</code> an <code>Out</code>. And then it will use <code>create</code> method in <code>FunctionMaker</code> to make a function, which will be return.</p>
+
+<pre><code class="python">def orig_function(inputs, outputs, mode=None, accept_inplace=False,
+                  name=None, profile=None, on_unused_input=None,
+                  output_keys=None):
+
+    # conver input variable into instances of In() instances
+    inputs = map(convert_function_input, inputs)
+
+    # so do outputs
+    if outputs is not None:
+        if isinstance(outputs, (list, tuple)):
+            outputs = map(FunctionMaker.wrap_out, outputs)
+        else:
+            outputs = FunctionMaker.wrap_out(outputs)
+
+    # In()s and Out()s will be passed into FunctionMaker and a function will be create from it by calling create() method.
+    fn = Maker(inputs,
+                   outputs,
+                   mode,
+                   accept_inplace=accept_inplace,
+                   profile=profile,
+                   on_unused_input=on_unused_input,
+                   output_keys = output_keys).create(
+                       defaults)         #     ^^^^ 
+</code></pre>
+
+<hr />
+
+<h3>FunctionMaker:</h3>
+
+<p><code>FunctionMaker.__init()__</code> is where <code>fgraph</code> is extracted and optimized. <code>FuncitonMaker.create()</code> is where <code>function</code> will be compiled and linked. In fact, <code>FunctionMaker.linker.make_thunk()</code> is where <code>function</code> is linked.</p>
+
+<pre><code class="python">class FunctionMaker:
+    def __init__( ...args... ):
+        # again, make sure that input/output are tranformed into In and Out
+        inputs, outputs = map(self.wrap_in, inputs), map(self.wrap_out, outputs)
+
+        # ???
+        _inputs = gof.graph.inputs([o.variable for o in outputs] + [i.update for i in inputs if getattr(i, 'update', False)])
+
+        # make indices ... which is useless
+        indices = [[input] + self.expand_in(input, _inputs) for input in inputs]
+
+        # get fgraph
+        if fgraph is Node:
+            fgraph, additional_outputs = std_fgraph(inputs, outputs, accept_inplace)
+        else:
+            _, additional_outputs = std_fgraph(inputs, outputs, accept_inplace)
+        self.fgraph = fgraph
+
+        # fetch optimizor and linker
+        optimizer, linker = mode.optimizer, copy.copy(mode.linker)
+
+        # optimize fgraph
+        # if need_opt:
+            # optimization code here
+
+        # linker accept fgraph 
+        if no_borrow:
+            self.linker = linker.accept(fgraph, no_recycling=infer_reuse_pattern(fgraph, no_borrow))
+        else:
+            self.linker = linker.accept(fgraph)
+
+        if hasattr(linker, 'accept_var_updates'):
+            # hacky thing so VMLinker knows about updates
+            self.linker.accept_var_updates(
+                    fgraph_updated_vars(fgraph, inputs))
+
+        # some other configeration here
+        # ...
+
+    def create(self, input_storage=None, trustme=False):
+    """
+    Create a function.
+
+    Input storage is the 'value' attribute of each In instances
+    """
+
+        # construct input_storage_list and default list
+        for i, ((input, indices, subinputs), input_storage_i) in enumerate(zip(self.indices, input_storage)):
+            # a lot of codes here.
+
+        """
+        Q: What's indices?
+        List of (SymbolicInput, incide, [SymbolicInput..]). The first one is the 
+        input vaiable; the incide is the index of the input in the input list; 
+        the [SymIn...] the relevant input(?); 
+        According to the document, the last two is deprecated. So it can be regarded as list of SymbolicInput.
+
+        Q: What's defaults?
+        A: List of 3-tuples. Each tuple corresponds to one input_storage. 
+        ( 
+          Bool: Is this input required at each function call?,  
+          Bool: Should this inputs value be reverted to default value after each call? 
+          AnyType: The value(storage) associated with this input.
+        )
+        """    
+
+        # call make_thunk() from linker and get fn
+        try:
+            theano.config.traceback.limit = 0
+            _fn, _i, _o = self.linker.make_thunk(input_storage=input_storage_lists)
+            # ^   ^   ^ =&gt; (function, input_containers, output_containers)
+            # where function is a thunk that operates on the returned variables.
+            # Because the map_storag() in make_thunk()
+            # from here on, the input/output_storage represent all I/O of all relative nodes
+            # ALso, storage is container, Instead of SymbolicKit
+        finally:
+            theano.config.traceback.limit = limit_orig
+
+        # get a function, here function_builder() is the constructor
+        # of class Function.
+        fn = self.function_builder(_fn, _i, _o, self.indices, self.outputs,
+                    defaults, self.unpack_single, self.return_none, self.output_keys, self)
+        return fn
+</code></pre>
+
+<hr />
+
+<h2>What&rsquo;s <code>theano.function</code>?</h2>
+
+<p>Each function is a callable object.  <code>theano.function</code> is not a python function. Instead, it a class with method <code>__call__()</code>.  Every funciton stores its own fgraph, maker, storages and many other configurations. However, the core of a function is a function <code>fn()</code> returned by <code>linker.make_thunk()</code>. Every time a function is called, it will first verify the input data, and then call <code>self.fn()</code> to get output values.</p>
+
+<hr />
+
+<p>Now I know how is a function borned. Also, I know that to complete my missions, I need to focus more on <code>FunctionMaker</code> and <code>Function</code> rather that <code>orig_func</code> and <code>pfunc</code>. However, there still exist some question, such as: What does <code>make_thunk()</code> do? and What is <code>In()</code>, <code>Out()</code> and <code>container</code>? In the next post, I will have a look at this and other relative data structures.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[GSoC2015_blog_test]]></title>
