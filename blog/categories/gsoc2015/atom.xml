@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Gsoc2015 | Pony's Stable]]></title>
   <link href="http://chienlima.github.io/blog/categories/gsoc2015/atom.xml" rel="self"/>
   <link href="http://chienlima.github.io/"/>
-  <updated>2015-05-07T19:10:23+08:00</updated>
+  <updated>2015-05-16T16:24:34+08:00</updated>
   <id>http://chienlima.github.io/</id>
   <author>
     <name><![CDATA[Chienli Ma]]></name>
@@ -12,6 +12,23 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[First Gift From Google]]></title>
+    <link href="http://chienlima.github.io/blog/2015/05/16/first-gift-from-google/"/>
+    <updated>2015-05-16T16:12:52+08:00</updated>
+    <id>http://chienlima.github.io/blog/2015/05/16/first-gift-from-google</id>
+    <content type="html"><![CDATA[<p>Several days a ago, I reveived a Fedex package. When I opened it &hellip; Bomb!</p>
+
+<p>Payoneer pre-paid MasterCard with google icon!</p>
+
+<p><img src="/images/GSoCMasterCard.jpg" width="512" height="512" title="&lsquo;image&rsquo; &lsquo;images&rsquo;" ></p>
+
+<p>Good looking card. I guass someone will regret for using existing bank account. Also this is my first own credit card. Finally I can make payment without a phone from my dad :)</p>
+
+<p>Google is ready to pay me now. &ldquo;Are you OK?&rdquo;( A jokes about Lei Jun from Xiaomi )</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[First Look Into Theano Core]]></title>
