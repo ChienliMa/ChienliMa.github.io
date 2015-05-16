@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Gsoc2015 | Pony's Stable]]></title>
   <link href="http://chienlima.github.io/blog/categories/gsoc2015/atom.xml" rel="self"/>
   <link href="http://chienlima.github.io/"/>
-  <updated>2015-05-16T16:27:41+08:00</updated>
+  <updated>2015-05-16T17:02:31+08:00</updated>
   <id>http://chienlima.github.io/</id>
   <author>
     <name><![CDATA[Chienli Ma]]></name>
@@ -20,13 +20,28 @@
     <id>http://chienlima.github.io/blog/2015/05/16/first-gift-from-google</id>
     <content type="html"><![CDATA[<p>Several days a ago, I reveived a Fedex package. When I opened it &hellip; Bomb!</p>
 
-<p>Payoneer pre-paid MasterCard with google icon!</p>
+<h4>Payoneer pre-paid MasterCard with Google icon on it!</h4>
 
 <p><img src="/images/GSoCMasterCard.jpg" width="512" height="512" title="&lsquo;image&rsquo; &lsquo;images&rsquo;" ></p>
 
-<p>Good looking card. I guass someone will regret for using existing bank account. Also this is my first own credit card. Finally I can make payment without a phone from my dad :)</p>
+<p>Good looking card. I guass someone will regret for using existing bank account.
+Also this is my first own credit card. Finally I can make payment without a phone from my dad :)</p>
 
-<p>Google is ready to pay me now. &ldquo;Are you OK?&rdquo;( A jokes about Lei Jun from Xiaomi )</p>
+<p>Google is ready to pay me now. &ldquo;Are you OK?&rdquo;( Leijun&rsquo;s &lsquo;Chinglish&rsquo; )</p>
+
+<hr />
+
+<p>Kinda occupied in the last week. Luckily, I finished those buinesses. And now I am back again.
+The first feature I will add to theano is a function that allow user to make a copy of function and allow functions run multi-theadedly. There exist two similar features: <code>pickle()</code> and <code>copy()</code> of a function. To figure how I need to work. I need to take 3 steps as preparation:</p>
+
+<ul>
+<li>Look into the code and see how function is generated <code>Done</code></li>
+<li>Look into the code and understand <code>Function</code>, <code>FunctionMaker</code>, <code>Linker</code> and <code>FunctionGraph</code>. <code>next</code></li>
+<li>Have a look at <code>pickle</code> and <code>copy()</code>, use them, figure out how them work and the differneces. Then think about my own idea.</li>
+</ul>
+
+
+<p>Ok, now I need to go and take the step two now.</p>
 ]]></content>
   </entry>
   
