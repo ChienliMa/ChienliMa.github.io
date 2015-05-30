@@ -9,7 +9,7 @@
   <meta name="author" content="Chienli Ma">
 
   
-  <meta name="description" content="Several days a ago, I reveived a Fedex package. When I opened it &hellip; Bomb! Payoneer pre-paid MasterCard with Google icon on it! Good looking &hellip;">
+  <meta name="description" content="The first feature was done and is being reviewed! This post is my reading notes of theano core this week and how I implements the share_memory &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,6 +64,173 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/05/17/second-look-into-theano-core/">Second_look_into_Theano_core</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-05-17T19:26:55+08:00'><span class='date'><span class='date-month'>May</span> <span class='date-day'>17</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>7:26 pm</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>The first feature was done and is being reviewed! This post is my reading notes of theano core this week and how I implements the share_memory feature.</p>
+
+<h2>Data sturctures</h2>
+
+<h3>Function</h3>
+
+<pre><code>Function is a callable object whose core is a function ```fn``` generate by linker. Every time a function is call, it will first examinate input data and then evaluate the ```fn``` to get output value.
+</code></pre>
+
+<p>PARAMETERS:</p>
+
+<ul>
+<li><strong>input/output_storages:</strong> two list of Container instance.</li>
+<li><strong>maker:</strong> the maker of this function</li>
+<li><strong>finder/inv_finder:</strong> provide mapping between <code>Container</code> and <code>In</code>( seems useless )</li>
+<li><strong>fn:</strong> Core, what the real &lsquo;function&rsquo; is, a python function that evaluate graph.</li>
+<li><strong>default and indices:</strong> List of tuples, partially useful. <code>default[i][2]</code> is <code>input_storage[i]</code> ;  <code>indices[i][0]</code> is <code>inputs[i]</code> in FunctionMaker.</li>
+</ul>
+
+
+<p>METHODS:</p>
+
+<ul>
+<li><code>__init__()</code>: Initialize input containers value and set up &ldquo;[]&rdquo; operator of container and self</li>
+<li><code>__call__()</code>: verify input data types and then execute the <code>self.fn</code>. Pickup value in some of the the output storages and set up corresponding input_storage in there&rsquo;s updates.</li>
+</ul>
+
+
+<hr />
+
+<h3>FunctionMaker</h3>
+
+<pre><code>FunctionMaker is a Factory that create function. However, it's not like a factory very much cause every maker only corrsponds to one function. In FunctionMaker some important info of a theano.function are stored, such as Inputs/Outputs(represented by SymbolicKit), FunctionGraph.
+</code></pre>
+
+<p>PARAMS:</p>
+
+<ul>
+<li><strong>indices:</strong> ( almost deprecated, ignore )</li>
+<li><strong>inputs:</strong> List of In() instances. In()</li>
+<li><strong>output:</strong> List of Out() instances</li>
+<li><strong>expanded_inputs:</strong> equals to inputs plus sharedvariables</li>
+<li><strong>fgraph:</strong> FunctionGraph that represents the function it creates.</li>
+<li><strong>Linker:</strong> Linker that link storage and apply method to create a <code>fn</code>. By default, <code>FAST_RUN</code> mode use <code>VM_Linker</code> , <code>FAST_COMPILE</code> uses <code>PerformLinker</code>.</li>
+<li><strong>Optimizer, mode, profile &hellip;</strong>: some configuration that has less to do with my job</li>
+</ul>
+
+
+<p>METHOD:</p>
+
+<ul>
+<li><strong>create(input_storages):</strong> Given input_storages(by default, list of In.value), start the linker and link the function using <code>Linker.make_thunk()</code> return a theano.function.</li>
+</ul>
+
+
+<hr />
+
+<h3>Linker/VM</h3>
+
+<pre><code>Linker is a class that allocate storage for allpy_nodes and link them together. Understanding Linker and FunctionGraph definitely helps understands how theano works. The core method of Linker is make_thunk(). 
+</code></pre>
+
+<p>PARAMS:</p>
+
+<ul>
+<li><strong>fgraph</strong>: <code>FunctionGraph</code> accpeted by <code>Linker.accept()</code>.</li>
+<li><strong>allow_gc,recycle&hellip;</strong>: some configuration bools</li>
+</ul>
+
+
+<p>METHODS:</p>
+
+<ul>
+<li><strong>make_thunk/all&hellip; :</strong>  <code>make_thunk()</code> is defined in class <code>Linker</code>. It calls method <code>make_all()</code>. Every subclass of linker will have slightly different implementation of <code>make_all()</code>. Bascially, at first, <code>make_all()</code> will toposort a fgraph, to acquire the <code>order</code> that apply_nodes should be executed. Next, it will call <code>Op.make_thunk()</code>, whick return a function. This function take input_storage of node, apply computation on them, and put result on output storage. Meanwhile, <code>make_all()</code> will allocate storage for all variables . Same variables in different node will have same storages. This is done by a dict <code>sotarge_map</code> that map variable to storage. At last, Linker return a function that executes list of thunks in certain order to acquire function outputs data.</li>
+</ul>
+
+
+<h3>Storage</h3>
+
+<pre><code>Storage is quite a tricky thing in theano. Theano use a list with one element to be a storage. The element is true data. But all object only refer to the list. 
+The list works like a pointer. When some objects refer to a storage, they refers to the list, not the true data. Therefore, modifying the data of storage will not change this reference. By doing this, theano can access and modify storage data from several places without change the reference relationship.
+</code></pre>
+
+<hr />
+
+<h3>FunctionGraph</h3>
+
+<pre><code>A representation of the computational graph of a function. It stores given the input and output variables of one function, by calling node.input and variable.owner recursively we can get the whole graph 
+</code></pre>
+
+<p>PARAMS:</p>
+
+<ul>
+<li><strong>features:</strong> Still Don&rsquo;t understand now, ignore it.</li>
+<li><strong>input/output:</strong> List of input/output variabls.</li>
+<li><strong>variables:</strong> Set of variables( all variables in the subgraph)</li>
+<li><strong>apply_nodes:</strong> Set of apply_nodes in the subgraph defined by inputs and outputs</li>
+</ul>
+
+
+<p>METHODS</p>
+
+<ul>
+<li><code>__import_r__</code> and <code>__import__()</code>: import variable and apply_node to this fgraph.</li>
+<li><code>clone_get_equiv</code> : Clone fgraph. Return new fgraph and a dict that map old variables to new variables.</li>
+<li><code>replace()</code> : Replace all certain variables in fgraph by given new variables.</li>
+</ul>
+
+
+<hr />
+
+<h2>How theano work?( Simplified version )</h2>
+
+<h3>Without update:</h3>
+
+<p>1.Input Variables will be wraped and become <code>In()</code>s. Each <code>In()</code> contains variable, it&rsquo;s value( defaults is none ) as well as some other configuration.
+2.Generate fgraph by input and output variables, and then optimize it.
+3.Linker toposorts fgraph to get an <code>order</code> of apply_nodes.Next, Linker allocates storages and links function based on this <code>order</code>.
+4.Done</p>
+
+<h3>With update:</h3>
+
+<p>Update is given by a dict <code>{ ori_var:update_var ... }</code>. <code>Ori_var</code> is limited to be an SharedVariable therefore it will transfer into <code>In()</code> and become the input of this function. <code>update_var</code> will be add into the output of fgraph. Everytime a function called, the function  extract the storage of <code>update_var</code> and use it to set the value of corresponding input.</p>
+
+<hr />
+
+<h2>How to implement the share_memory feature?</h2>
+
+<p>This is simple after understand how theano works. I implements it following sevaral steps:
+1. Copy <code>In()</code> and <code>Out()</code> instances in Maker
+2. Copy fgraph and get the dict <code>equiv</code> that map old variables to new variables
+3. Copy old storage_map in <code>Function.fn.storage_map</code>
+4. Modify copied storage_map accord to equiv, so that in the copied storage_map, new variables are mapped to old storage if memory need to be shared.
+5. Reinitialize the maker, linke the function using the copied storage_map
+6. Done</p>
+
+<hr />
+
+<p>Ok, basically this is the report of this week&rsquo;s work. Now I need to figure out how to implement the following features.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2090,6 +2257,10 @@ Note: <code>next()</code> and <code>hasNext()</code> should run in average <code
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/05/17/second-look-into-theano-core/">Second_look_into_Theano_core</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/05/16/first-gift-from-google/">First Gift From Google</a>
       </li>
     
@@ -2103,10 +2274,6 @@ Note: <code>next()</code> and <code>hasNext()</code> should run in average <code
     
       <li class="post">
         <a href="/blog/2015/03/30/leetcode-some-python-codes/">Leetcode battlefield:Some Python Codes</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/03/27/gsoc2015-blog-test/">GSoC2015_blog_test</a>
       </li>
     
   </ul>
