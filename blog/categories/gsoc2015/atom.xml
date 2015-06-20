@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Gsoc2015 | Pony's Stable]]></title>
   <link href="http://chienlima.github.io/blog/categories/gsoc2015/atom.xml" rel="self"/>
   <link href="http://chienlima.github.io/"/>
-  <updated>2015-05-30T22:22:44+08:00</updated>
+  <updated>2015-06-21T00:15:41+08:00</updated>
   <id>http://chienlima.github.io/</id>
   <author>
     <name><![CDATA[Chienli Ma]]></name>
@@ -12,6 +12,21 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[The Second Two-week]]></title>
+    <link href="http://chienlima.github.io/blog/2015/06/21/the-second-two-week/"/>
+    <updated>2015-06-21T00:09:54+08:00</updated>
+    <id>http://chienlima.github.io/blog/2015/06/21/the-second-two-week</id>
+    <content type="html"><![CDATA[<p>Almost forget to update a post.</p>
+
+<p>In this two week, I finished the first feature &ldquo;Allow user to regenerate a function from compiled one&rdquo;, and this feature &ldquo;can be merged. But there&rsquo;s another PR need to rebase.&rdquo;  So, it&rsquo;s done.</p>
+
+<p>Also, I get a draft of the code that allow user to swap SharedVariable. When I said &lsquo;draft&rsquo;, I mean that I&rsquo;ve finish the code as well as the testcase and they work. I&rsquo;ll make a PR for review at the beginning of next week. Also I have some new idea need to discuss with Fred.</p>
+
+<p>I hope I can finish all 3 feature in the first 6-week: copy, swap_sharedvariable and delete_update. So that I can focus on OpFromGraph in the next half. It seems that someone has started working on it now. I hope he did not &lsquo;rob&rsquo; my job. :)</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Second_look_into_Theano_core]]></title>

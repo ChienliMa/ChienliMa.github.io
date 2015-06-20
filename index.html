@@ -9,7 +9,7 @@
   <meta name="author" content="Chienli Ma">
 
   
-  <meta name="description" content="The first feature was done and is being reviewed! This post is my reading notes of theano core this week and how I implements the share_memory &hellip;">
+  <meta name="description" content="Almost forget to update a post. In this two week, I finished the first feature &ldquo;Allow user to regenerate a function from compiled one&rdquo;, &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,6 +64,41 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/06/21/the-second-two-week/">The Second Two-week</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-06-21T00:09:54+08:00'><span class='date'><span class='date-month'>Jun</span> <span class='date-day'>21</span><span class='date-suffix'>st</span>, <span class='date-year'>2015</span></span> <span class='time'>12:09 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Almost forget to update a post.</p>
+
+<p>In this two week, I finished the first feature &ldquo;Allow user to regenerate a function from compiled one&rdquo;, and this feature &ldquo;can be merged. But there&rsquo;s another PR need to rebase.&rdquo;  So, it&rsquo;s done.</p>
+
+<p>Also, I get a draft of the code that allow user to swap SharedVariable. When I said &lsquo;draft&rsquo;, I mean that I&rsquo;ve finish the code as well as the testcase and they work. I&rsquo;ll make a PR for review at the beginning of next week. Also I have some new idea need to discuss with Fred.</p>
+
+<p>I hope I can finish all 3 feature in the first 6-week: copy, swap_sharedvariable and delete_update. So that I can focus on OpFromGraph in the next half. It seems that someone has started working on it now. I hope he did not &lsquo;rob&rsquo; my job. :)</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2213,38 +2248,9 @@ Note: <code>next()</code> and <code>hasNext()</code> should run in average <code
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/01/16/have-a-try-on-octopress/">Have a Try on Octopress</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-01-16T23:20:53+08:00'><span class='date'><span class='date-month'>Jan</span> <span class='date-day'>16</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>11:20 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>I&rsquo;ve always want a English technical blog. i&rsquo;ve tried wordpress, which is far from satisfying to inserting code.</p>
-
-<p>Now, I have a try on octopress. Hope it work well~</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
+    
+      <a class="prev" href="/posts/2">&larr; Older</a>
     
     <a href="/blog/archives">Blog Archives</a>
     
@@ -2255,6 +2261,10 @@ Note: <code>next()</code> and <code>hasNext()</code> should run in average <code
     <section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2015/06/21/the-second-two-week/">The Second Two-week</a>
+      </li>
     
       <li class="post">
         <a href="/blog/2015/05/17/second-look-into-theano-core/">Second_look_into_Theano_core</a>
@@ -2270,10 +2280,6 @@ Note: <code>next()</code> and <code>hasNext()</code> should run in average <code
     
       <li class="post">
         <a href="/blog/2015/03/30/leetcode-start-coding-with-c-plus-plus/">Leetcode battlefield:Start Coding With C++</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/03/30/leetcode-some-python-codes/">Leetcode battlefield:Some Python Codes</a>
       </li>
     
   </ul>
