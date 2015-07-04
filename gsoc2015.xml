@@ -4,7 +4,7 @@
   <title><![CDATA[Pony's Stable]]></title>
   <link href="http://chienlima.github.io/atom.xml" rel="self"/>
   <link href="http://chienlima.github.io/"/>
-  <updated>2015-06-21T00:15:41+08:00</updated>
+  <updated>2015-07-04T23:53:28+08:00</updated>
   <id>http://chienlima.github.io/</id>
   <author>
     <name><![CDATA[Chienli Ma]]></name>
@@ -12,6 +12,97 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Evaluation Passed and the Next Step: OpFromGraph]]></title>
+    <link href="http://chienlima.github.io/blog/2015/07/04/newpost/"/>
+    <updated>2015-07-04T23:51:57+08:00</updated>
+    <id>http://chienlima.github.io/blog/2015/07/04/newpost</id>
+    <content type="html"><![CDATA[<p>Evaluation passed and the next step: OpFromGraph</p>
+
+<p>The PR of <code>function.copy()</code> is ready to merged, only need fred to fix a small bug. And in this Friday I passed the mid-term evaluation. So it&rsquo;s time to take the next step.</p>
+
+<p>In the original proposal ,the next step is to <code>swap output and updates</code>. After a discussion with Fred, we thought this feature is useless so we skip this and head to the next feature directly &ndash; <code>OpFromGraph</code>.</p>
+
+<h2>Goal: </h2>
+
+<p>make class <code>OpFromGraph</code> work.</p>
+
+<h2>Big How?</h2>
+
+<p> <code>OpFromGraph</code> should init a <code>gof.op</code> that has no difference with other <code>Op</code>s and can be optimized. Otherwise it has no sense.</p>
+
+<p>For this, we need to make it work on GPU, make sure it works with C code and document it. Make sure <code>infer_shape()</code>, <code>grad()</code> work with it. Ideally, make <code>R_op()</code> work too.</p>
+
+<h2>Detailed how.</h2>
+
+<ul>
+<li>Implement <code>__hash__()</code> and <code>__eq__()</code> method so it is a basic</li>
+<li>Implement <code>infer_shape()</code> method so that it&rsquo;s optimizable</li>
+<li>test if it work with shared variable as input and if not make it work. Add test for that.</li>
+<li>Move it correctly to the GPU. We can do it quickly for the old back-end, move all float32 inputs to the GPU. Otherwise, we need to compile the inner function, see which inputs get moved to the GPU, then create a new OpFromGraph with the corresponding input to the GPU. <a href="https://github.com/Theano/Theano/pull/2982">#2982</a></li>
+<li>Maker<code>grad()</code> work. This should remove the grad_depth parameter</li>
+</ul>
+
+
+<hr />
+
+<h3>First Step: infer_shape:</h3>
+
+<p>The main idea is to calculatet the shapes of outputs from given input shapes. This is a process similar to executing a function &ndash; we cannot know the shape of a variable before knowing the shape of the variables it depends on. So, we can mimic the <code>make_thunk()</code> method to calculate the shape from output to input. I come out with a draft now, and need some help with test case.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='python'><span class='line'><span class="n">order</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fn</span><span class="o">.</span><span class="n">maker</span><span class="o">.</span><span class="n">fgraph</span><span class="o">.</span><span class="n">toposort</span><span class="p">()</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># A dict that map variable to its shape(list)</span>
+</span><span class='line'><span class="n">shape_map</span> <span class="o">=</span> <span class="p">{}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># set the input shape of the fgraph</span>
+</span><span class='line'><span class="k">for</span> <span class="n">in_var</span><span class="p">,</span> <span class="n">shape</span> <span class="ow">in</span> <span class="n">izip</span><span class="p">(</span><span class="n">in_vars</span><span class="p">,</span> <span class="n">shapes</span><span class="p">);</span>
+</span><span class='line'>    <span class="n">shape_map</span><span class="o">.</span><span class="n">set_default</span><span class="p">(</span><span class="n">in_var</span><span class="p">,</span> <span class="n">shape</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># calculate the output shape from input shape</span>
+</span><span class='line'><span class="k">for</span> <span class="n">node</span> <span class="ow">in</span> <span class="n">order</span><span class="p">:</span>
+</span><span class='line'>    <span class="k">assert</span> <span class="nb">all</span><span class="p">([</span><span class="n">var</span> <span class="ow">in</span> <span class="n">shape_map</span><span class="o">.</span><span class="n">keys</span><span class="p">()</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">inputs</span><span class="p">])</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c"># calculate output shape</span>
+</span><span class='line'>    <span class="n">in_shapes</span> <span class="o">=</span> <span class="p">[</span> <span class="n">shape_map</span><span class="p">[</span><span class="n">var</span><span class="p">]</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">node</span><span class="o">.</span><span class="n">inputs</span><span class="p">]</span>
+</span><span class='line'>    <span class="n">out_shapes</span> <span class="o">=</span> <span class="n">node</span><span class="o">.</span><span class="n">op</span><span class="o">.</span><span class="n">infer_shape</span><span class="p">(</span><span class="n">node</span><span class="p">,</span> <span class="n">in_shapes</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="c"># store the shape of that variable</span>
+</span><span class='line'>    <span class="k">for</span> <span class="n">out_var</span><span class="p">,</span> <span class="n">shape</span> <span class="ow">in</span> <span class="n">izip</span><span class="p">(</span><span class="n">node</span><span class="o">.</span><span class="n">outputs</span><span class="p">,</span> <span class="n">out_shapes</span><span class="p">):</span>
+</span><span class='line'>        <span class="n">shape_map</span><span class="o">.</span><span class="n">set_default</span><span class="p">(</span><span class="n">out_var</span><span class="p">,</span> <span class="nb">list</span><span class="p">(</span><span class="n">shape</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="c"># extract output shape</span>
+</span><span class='line'><span class="k">return</span> <span class="p">[</span> <span class="nb">tuple</span><span class="p">(</span><span class="n">shape_map</span><span class="p">[</span><span class="n">var</span><span class="p">])</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="n">fgraph</span><span class="o">.</span><span class="n">outputs</span><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[The Second Two-week]]></title>

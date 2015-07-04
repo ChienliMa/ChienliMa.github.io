@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd" xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
+    <loc>http://chienlima.github.io/blog/2015/07/04/newpost/</loc>
+    <lastmod>2015-07-04T23:51:57+08:00</lastmod>
+    <priority>0.8</priority>
+  </url>
+  <url>
     <loc>http://chienlima.github.io/blog/2015/06/21/the-second-two-week/</loc>
     <lastmod>2015-06-21T00:09:54+08:00</lastmod>
     <priority>0.8</priority>
@@ -57,25 +62,25 @@
   </url>
   <url>
     <loc>http://chienlima.github.io/blog/archives/</loc>
-    <lastmod>2015-06-21T00:15:41+08:00</lastmod>
+    <lastmod>2015-07-04T23:53:28+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>http://chienlima.github.io/</loc>
-    <lastmod>2015-06-21T00:15:41+08:00</lastmod>
+    <lastmod>2015-07-04T23:53:28+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
   </url>
   <url>
     <loc>http://chienlima.github.io/blog/catagory/</loc>
-    <lastmod>2015-06-21T00:15:41+08:00</lastmod>
+    <lastmod>2015-07-04T23:53:28+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>http://chienlima.github.io/aboutme/</loc>
-    <lastmod>2015-06-21T00:15:41+08:00</lastmod>
+    <lastmod>2015-07-04T23:53:28+08:00</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
