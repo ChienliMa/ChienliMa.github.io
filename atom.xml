@@ -4,7 +4,7 @@
   <title><![CDATA[Pony's Stable]]></title>
   <link href="http://chienlima.github.io/atom.xml" rel="self"/>
   <link href="http://chienlima.github.io/"/>
-  <updated>2015-07-04T23:53:28+08:00</updated>
+  <updated>2015-07-19T15:01:43+08:00</updated>
   <id>http://chienlima.github.io/</id>
   <author>
     <name><![CDATA[Chienli Ma]]></name>
@@ -12,6 +12,29 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Putting Hand on OpFromGraph]]></title>
+    <link href="http://chienlima.github.io/blog/2015/07/18/put-hand-on-opfromgraph/"/>
+    <updated>2015-07-18T18:01:35+08:00</updated>
+    <id>http://chienlima.github.io/blog/2015/07/18/put-hand-on-opfromgraph</id>
+    <content type="html"><![CDATA[<p>This two week, I start working on <code>OpFromGraph</code>. Which is the second part of the proposal.</p>
+
+<p>Currently, if a FunctionGraph have repeated subgraph, theano will optimize these sub-graphs individually, which is not only a waste of computational resources but a waste of time. If we can extract a common structure in FunctionGraph and make it a <code>Op</code>, we can only optimize the sub-graph of this <code>Op</code> once and reuse it every where. This will speed up the optimization process. And <code>OpFromGraph</code> provides such feature.</p>
+
+<p>To make <code>OpFromGraph</code> works well, it should support GPU and can be optimized. Following feature are expected:</p>
+
+<ul>
+<li><code>__eq__()</code> and <code>__hash__()</code></li>
+<li><code>connection_pattern()</code> and &#8220;infer__shape()&#8220;`</li>
+<li>Support GPU</li>
+<li><code>c_code()</code></li>
+</ul>
+
+
+<p>I implement two feature in last two week: <code>connection_pattern</code> and <code>infer_shape</code>.  I hope I can make  <code>OpFromGraph</code> a useful feature at the end of this GSoC :).</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Evaluation Passed and the Next Step: OpFromGraph]]></title>
