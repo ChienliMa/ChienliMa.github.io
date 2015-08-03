@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Gsoc2015 | Pony's Stable]]></title>
   <link href="http://chienlima.github.io/blog/categories/gsoc2015/atom.xml" rel="self"/>
   <link href="http://chienlima.github.io/"/>
-  <updated>2015-07-19T15:01:43+08:00</updated>
+  <updated>2015-08-03T11:20:40+08:00</updated>
   <id>http://chienlima.github.io/</id>
   <author>
     <name><![CDATA[Chienli Ma]]></name>
@@ -12,6 +12,21 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[OpfromGraph.c_code]]></title>
+    <link href="http://chienlima.github.io/blog/2015/08/03/opfromgraph-dot-c-code/"/>
+    <updated>2015-08-03T11:04:09+08:00</updated>
+    <id>http://chienlima.github.io/blog/2015/08/03/opfromgraph-dot-c-code</id>
+    <content type="html"><![CDATA[<p>In this two weeks <code>connection_pattern</code> and <code>infer_shape</code> were merged. I was supposted to implemented the GPU optimization feature. As I don&rsquo;t have a machine with Nvidia GPU, I truned to the <code>c_code</code> method after several days.</p>
+
+<p>Reusing the code of <code>CLinker</code> would be our original idea. But thing wuold not be that simple. <code>CLinker</code> generate code at a function scale which mean it treat node <code>OpFromGraph</code> as a function. Yet we want to generate code at a OP scale. Therefore we need to remove some code in a larger scale to make <code>OpFromGraph.c_code()</code> return a &lsquo;node like&rsquo; c_code.</p>
+
+<p>There&rsquo;re to solution. One is to add a new feature to <code>CLinker</code> so that it can detect <code>OpFromGraph</code> node and do some special behavior. The other one is to avoid high level method like <code>code_gen()</code> in <code>CLinker</code> &ndash; only use auxilary method to assemble a &lsquo;node like&rsquo; c_code. The later solution seems easier and I am working on it.  <code>CLinker</code> is a very complicated class, I try to understand it and work out a workable code in the next two weeks.</p>
+
+<p>Wish myself good luck~~!</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Putting Hand on OpFromGraph]]></title>
@@ -260,38 +275,6 @@ The list works like a pointer. When some objects refer to a storage, they refers
 <hr />
 
 <p>Ok, basically this is the report of this week&rsquo;s work. Now I need to figure out how to implement the following features.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[First Gift From Google]]></title>
-    <link href="http://chienlima.github.io/blog/2015/05/16/first-gift-from-google/"/>
-    <updated>2015-05-16T16:12:52+08:00</updated>
-    <id>http://chienlima.github.io/blog/2015/05/16/first-gift-from-google</id>
-    <content type="html"><![CDATA[<p>Several days a ago, I reveived a Fedex package. When I opened it &hellip; Bomb!</p>
-
-<h4>Payoneer pre-paid MasterCard with Google icon on it!</h4>
-
-<p><img src="/images/GSoCMasterCard.jpg" width="512" height="512" title="&lsquo;image&rsquo; &lsquo;images&rsquo;" ></p>
-
-<p>Good looking card. I guass someone will regret for using existing bank account.
-Also this is my first own credit card. Finally I can make payment without a phone from my dad :)</p>
-
-<p>Google is ready to pay me now. &ldquo;Are you OK?&rdquo;( Leijun&rsquo;s &lsquo;Chinglish&rsquo; )</p>
-
-<hr />
-
-<p>Kinda occupied in the last week. Luckily, I finished those buinesses. And now I am back again.
-The first feature I will add to theano is a function that allow user to make a copy of function and allow functions run multi-theadedly. There exist two similar features: <code>pickle()</code> and <code>copy()</code> of a function. To figure how I need to work. I need to take 3 steps as preparation:</p>
-
-<ul>
-<li>Look into the code and see how function is generated <code>Done</code></li>
-<li>Look into the code and understand <code>Function</code>, <code>FunctionMaker</code>, <code>Linker</code> and <code>FunctionGraph</code>. <code>next</code></li>
-<li>Have a look at <code>pickle</code> and <code>copy()</code>, use them, figure out how them work and the differneces. Then think about my own idea.</li>
-</ul>
-
-
-<p>Ok, now I need to go and take the step two now.</p>
 ]]></content>
   </entry>
   

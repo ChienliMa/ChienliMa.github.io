@@ -5,12 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>GSoC2015_blog_test - Pony&#8217;s Stable</title>
+  <title>OpfromGraph.c_code - Pony&#8217;s Stable</title>
   <meta name="author" content="Chienli Ma">
 
   
-  <meta name="description" content="Just a post to test if catagory and rss feed works well.
-">
+  <meta name="description" content="In this two weeks connection_pattern and infer_shape were merged. I was supposted to implemented the GPU optimization feature. As I don&rsquo;t have &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://chienlima.github.io/blog/2015/03/27/gsoc2015-blog-test/">
+  <link rel="canonical" href="http://chienlima.github.io/blog/2015/08/03/opfromgraph-dot-c-code/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <link href="/atom.xml" rel="alternate" title="Pony's Stable" type="application/atom+xml">
@@ -68,7 +67,7 @@
   
   <header>
     
-      <h1 class="entry-title">GSoC2015_blog_test</h1>
+      <h1 class="entry-title">OpfromGraph.c_code</h1>
     
     
       <p class="meta">
@@ -77,14 +76,20 @@
 
 
 
-<time class='entry-date' datetime='2015-03-27T12:52:17+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>27</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:52 pm</span></time>
+<time class='entry-date' datetime='2015-08-03T11:04:09+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>3</span><span class='date-suffix'>rd</span>, <span class='date-year'>2015</span></span> <span class='time'>11:04 am</span></time>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>Just a post to test if catagory and rss feed works well.</p>
+<div class="entry-content"><p>In this two weeks <code>connection_pattern</code> and <code>infer_shape</code> were merged. I was supposted to implemented the GPU optimization feature. As I don&rsquo;t have a machine with Nvidia GPU, I truned to the <code>c_code</code> method after several days.</p>
+
+<p>Reusing the code of <code>CLinker</code> would be our original idea. But thing wuold not be that simple. <code>CLinker</code> generate code at a function scale which mean it treat node <code>OpFromGraph</code> as a function. Yet we want to generate code at a OP scale. Therefore we need to remove some code in a larger scale to make <code>OpFromGraph.c_code()</code> return a &lsquo;node like&rsquo; c_code.</p>
+
+<p>There&rsquo;re to solution. One is to add a new feature to <code>CLinker</code> so that it can detect <code>OpFromGraph</code> node and do some special behavior. The other one is to avoid high level method like <code>code_gen()</code> in <code>CLinker</code> &ndash; only use auxilary method to assemble a &lsquo;node like&rsquo; c_code. The later solution seems easier and I am working on it.  <code>CLinker</code> is a very complicated class, I try to understand it and work out a workable code in the next two weeks.</p>
+
+<p>Wish myself good luck~~!</p>
 </div>
 
 
@@ -100,7 +105,7 @@
 
 
 
-<time class='entry-date' datetime='2015-03-27T12:52:17+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>27</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:52 pm</span></time>
+<time class='entry-date' datetime='2015-08-03T11:04:09+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>3</span><span class='date-suffix'>rd</span>, <span class='date-year'>2015</span></span> <span class='time'>11:04 am</span></time>
       
 
 <span class="categories">
@@ -123,10 +128,8 @@
     
     <p class="meta">
       
-        <a class="basic-alignment left" href="/blog/2015/03/12/largest-number-and-tdd/" title="Previous Post: Leetcode battlefield: largestNum (and TDD?)">&laquo; Leetcode battlefield: largestNum (and TDD?)</a>
+        <a class="basic-alignment left" href="/blog/2015/07/18/put-hand-on-opfromgraph/" title="Previous Post: Putting hand on OpFromGraph">&laquo; Putting hand on OpFromGraph</a>
       
-      
-        <a class="basic-alignment right" href="/blog/2015/03/30/leetcode-some-python-codes/" title="Next Post: Leetcode battlefield:Some python codes">Leetcode battlefield:Some python codes &raquo;</a>
       
     </p>
   </footer>

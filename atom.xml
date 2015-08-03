@@ -4,7 +4,7 @@
   <title><![CDATA[Pony's Stable]]></title>
   <link href="http://chienlima.github.io/atom.xml" rel="self"/>
   <link href="http://chienlima.github.io/"/>
-  <updated>2015-07-19T15:01:43+08:00</updated>
+  <updated>2015-08-03T11:20:40+08:00</updated>
   <id>http://chienlima.github.io/</id>
   <author>
     <name><![CDATA[Chienli Ma]]></name>
@@ -12,6 +12,21 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[OpfromGraph.c_code]]></title>
+    <link href="http://chienlima.github.io/blog/2015/08/03/opfromgraph-dot-c-code/"/>
+    <updated>2015-08-03T11:04:09+08:00</updated>
+    <id>http://chienlima.github.io/blog/2015/08/03/opfromgraph-dot-c-code</id>
+    <content type="html"><![CDATA[<p>In this two weeks <code>connection_pattern</code> and <code>infer_shape</code> were merged. I was supposted to implemented the GPU optimization feature. As I don&rsquo;t have a machine with Nvidia GPU, I truned to the <code>c_code</code> method after several days.</p>
+
+<p>Reusing the code of <code>CLinker</code> would be our original idea. But thing wuold not be that simple. <code>CLinker</code> generate code at a function scale which mean it treat node <code>OpFromGraph</code> as a function. Yet we want to generate code at a OP scale. Therefore we need to remove some code in a larger scale to make <code>OpFromGraph.c_code()</code> return a &lsquo;node like&rsquo; c_code.</p>
+
+<p>There&rsquo;re to solution. One is to add a new feature to <code>CLinker</code> so that it can detect <code>OpFromGraph</code> node and do some special behavior. The other one is to avoid high level method like <code>code_gen()</code> in <code>CLinker</code> &ndash; only use auxilary method to assemble a &lsquo;node like&rsquo; c_code. The later solution seems easier and I am working on it.  <code>CLinker</code> is a very complicated class, I try to understand it and work out a workable code in the next two weeks.</p>
+
+<p>Wish myself good luck~~!</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Putting Hand on OpFromGraph]]></title>
