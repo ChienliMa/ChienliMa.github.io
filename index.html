@@ -9,7 +9,7 @@
   <meta name="author" content="Chienli Ma">
 
   
-  <meta name="description" content="In this two weeks connection_pattern and infer_shape were merged. I was supposted to implemented the GPU optimization feature. As I don&rsquo;t have &hellip;">
+  <meta name="description" content="In the last week I wasted a lost of time for not turly understand others' codes. And I wanna make a self-criticism. At the beginning of the tasks &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -64,6 +64,47 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2015/08/11/understand-c-linker/">Self Criticism</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+<time class='entry-date' datetime='2015-08-11T11:40:07+08:00'><span class='date'><span class='date-month'>Aug</span> <span class='date-day'>11</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>11:40 am</span></time>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>In the last week I wasted a lost of time for not turly understand others&#8217; codes. And I wanna make a self-criticism.</p>
+
+<p>At the beginning of the tasks <code>OpFromGraph.c_code()</code>, Fred pointed to me a few commits which he thought might be and majorly implemented <code>make_thunk()</code> method. “This is wired, why he provided codes of other method?”, I thought. With only a glance of the codes and some confusions, I turned to <code>CLinker</code> and <code>gof.Op</code>.</p>
+
+<p>I thought this might be a simple mission, which wasn&rsquo;t. The biggest problem was my misunderstand of <code>CLinker</code> &ndash; I thought it is something like <code>PerformLinker</code> and <code>VM_Likner</code>, called by <code>orig_func()</code> and linking the whole graph. But the truth is <code>CLinker</code> did not serve the fgraph, but the node. In <code>gof.Op.make_thunk()</code>, if <code>op_use_c_code</code> is true, it will call <code>make_c_thunk()</code> and use <code>CLinker</code> to generate a C code and link the storage. And then return a <code>ret</code>(what&rsquo;s a <code>ret</code>?)</p>
+
+<p>So there&rsquo;s two equivalence ways to impelemnt <code>c_code()</code>, to make an <code>Op</code> faster. One is the way I took &ndash; implementing serious of C code method of <code>Op</code>, so that <code>Op</code> can return C code accords to fgraph. In this way I need to generate C code fitst. And then I need to break apart those code while ensuring they can be compiled after being resembled by <code>CLinker</code>. This require a thorough understand of <code>CLinker</code>. Yes I can only get the basic idea. Therefore I stucked.</p>
+
+<p>The other way is override the <code>make_thunk()</code>(or <code>make_c_thunk</code>)method, which is Fred&rsquo;s way. This is much easier. Because we do not need to seperate the codes, it is generated in a whole and independently. We don&rsquo;t link the cthunk with storage until it&rsquo;s generated(really?), which save a lot of problem and make full use of <code>CLinker</code>&rsquo;s ability.</p>
+
+<p>Fred already gave me a workable code. I only need to improve it a bit. But my ignorant lead me into another way.Therefoer I decide to post this blog to remind me that everytime before I take a step, I need to full understand what I&rsquo;m going to do and how I&rsquo;m going to accomlish it, as well as suggestion from others. Otherwise, the more effort I make, I more resoureces I waste. Also, ask question when confused.</p>
+
+<p>Shame on me this time.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1885,35 +1926,6 @@ Note: <code>next()</code> and <code>hasNext()</code> should run in average <code
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2015/03/27/gsoc2015-blog-test/">GSoC2015_blog_test</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-<time class='entry-date' datetime='2015-03-27T12:52:17+08:00'><span class='date'><span class='date-month'>Mar</span> <span class='date-day'>27</span><span class='date-suffix'>th</span>, <span class='date-year'>2015</span></span> <span class='time'>12:52 pm</span></time>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Just a post to test if catagory and rss feed works well.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/posts/2">&larr; Older</a>
@@ -1929,6 +1941,10 @@ Note: <code>next()</code> and <code>hasNext()</code> should run in average <code
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2015/08/11/understand-c-linker/">Self Criticism</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2015/08/03/opfromgraph-dot-c-code/">OpfromGraph.c_code</a>
       </li>
     
@@ -1942,10 +1958,6 @@ Note: <code>next()</code> and <code>hasNext()</code> should run in average <code
     
       <li class="post">
         <a href="/blog/2015/06/21/the-second-two-week/">The Second Two-week</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2015/05/17/second-look-into-theano-core/">Second_look_into_Theano_core</a>
       </li>
     
   </ul>
